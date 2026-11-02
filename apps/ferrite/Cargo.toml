@@ -1,6 +1,6 @@
 [package]
 name = "ferrite"
-description = "Binario CLI de FerriteVR"
+description = "Binario CLI principal de FerriteVR"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -11,3 +11,11 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
+ferrite-nucleo = { path = "../../crates/ferrite-nucleo" }
+ferrite-osc = { path = "../../crates/ferrite-osc" }
+clap = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+anyhow = { workspace = true }
+ctrlc = { workspace = true }
+glam = { workspace = true }

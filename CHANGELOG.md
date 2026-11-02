@@ -8,6 +8,11 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 ## [Sin publicar]
 
 ### Agregado
+- Binario CLI `apps/ferrite` con parseo declarativo (`clap` derive), trazado estructurado (`tracing` y `tracing-subscriber`), manejo robusto de interrupción limpia con `ctrlc` y reporte contextual con `anyhow`.
+- Subcomando `fake` con ticker de alta precisión sin deriva temporal (`--destino`, `--hz`, `--duracion-seg`) para emitir frames de marcha sintética fluida hacia VRChat OSC.
+- Módulo cinemático determinista (`sintetico`) con garantía matemática de cota vertical en pies ($Y \ge 0.05$ m), balanceo natural de cadera y braceo coordinado.
+- Declaración de subcomandos con stubs informativos (`run`, `grabar`, `reproducir`, `bench`) para las fases posteriores del proyecto.
+- Tutorial guiado paso a paso en `docs/tutoriales/primera-prueba-con-vrchat.md` para calibración y validación de FBT en Meta Quest 3S mediante Steam Link.
 - Crate `ferrite-osc` para emisión atómica de trackers hacia VRChat por UDP mediante paquetes bundle de OSC (`rosc`), con mapeo determinista de ranuras (`1..=8` y `head`), validación estricta de límites sin pánico y filtrado de articulaciones por confianza.
 - Documento de directrices y convenciones OSC de VRChat en `crates/ferrite-osc/AGENTS.md`.
 - Pruebas de integración UDP locales verificando codificación y decodificación de `OscBundle`, direcciones (`/tracking/trackers/*`) y tipos flotantes.
@@ -35,5 +40,6 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 ### Corregido
 
 ### Eliminado
+- Archivo `.gitkeep` en `docs/tutoriales/` tras redactar el tutorial de VRChat.
 - Archivo `.gitkeep` en `docs/guias/` tras incorporar la guía de instalación de CUDA y TensorRT.
 - Archivos `.gitkeep` en `docs/explicacion/` y `docs/referencia/` tras incorporar documentación oficial.
