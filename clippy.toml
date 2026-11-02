@@ -1,0 +1,8 @@
+# Configuración de Clippy para FerriteVR
+# Directrices de código de baja latencia y mantenibilidad
+cognitive-complexity-threshold = 30
+too-many-arguments-threshold = 8
+too-many-lines-threshold = 500
+enum-variant-name-threshold = 3
+avoid-breaking-exported-api = true
+msrv = "1.85.0"

@@ -8,6 +8,10 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 ## [Sin publicar]
 
 ### Agregado
+- Configuración de herramientas de formateo y calidad: `rustfmt.toml` (Rust 2024, max 100 col), `clippy.toml`, `deny.toml` (auditoría de licencias y seguridad) y `_typos.toml` (corrección ortográfica adaptada a español).
+- Script canónico de verificación de calidad `scripts/verificar.sh` con detección modular de herramientas y workspace.
+- Hook de pre-commit local en `.githooks/pre-commit` para validación automatizada previa a cada confirmación.
+- Flujo de Integración Continua en GitHub Actions (`.github/workflows/ci.yml`) con ejecución de pruebas, auditorías y validación de enlaces con lychee.
 - Skills del workspace para desarrollo asistido en `.agents/skills/` (`rust-guidelines`, `ferrite-verificar`, `ferrite-docs`, `vrchat-osc`) con referencias vendorizadas.
 - Documento de explicación sobre estándares y herramientas de desarrollo para agentes en `docs/explicacion/herramientas-agente.md`.
 - Especificación técnica y matriz de verificación de trackers OSC de VRChat en `docs/referencia/vrchat-osc-trackers.md`.

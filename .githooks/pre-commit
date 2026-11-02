@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# .githooks/pre-commit - Hook de pre-commit para FerriteVR
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+echo "--- Ejecutando pre-commit hook (verificar.sh) ---"
+"${REPO_ROOT}/scripts/verificar.sh"
