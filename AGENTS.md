@@ -69,3 +69,10 @@ Los agentes y scripts **NUNCA DEBEN EJECUTAR `sudo`**. Toda accion que requiera 
 | `ferrite-docs` | `.agents/skills/ferrite-docs/` | Estructura Diataxis, entradas en `CHANGELOG.md` y redaccion de ADRs en `docs/adr/`. |
 | `vrchat-osc` | `.agents/skills/vrchat-osc/` | Protocolo OSC de VRChat (`/tracking/trackers/*`, unidades, ejes y slots). |
 | `kinect-depuracion-hw` | `.agents/skills/kinect-depuracion-hw/` | Diagnostico de hardware Kinect v2, enlace USB 3 y libfreenect2 (Fase 3). |
+
+## 8. Memoria del proyecto y planes de trabajo (`.agents/planes/`)
+
+Cualquier agente de IA que retome el proyecto debe consultar obligatoriamente esta carpeta:
+- **Estado actual y traspaso:** `.agents/planes/memoria-estado.md` (detalla qué está implementado, qué pruebas pasan y cuál es el siguiente paquete a ejecutar).
+- **Plan maestro detallado:** `.agents/planes/plan-maestro.md` (especificación completa de todos los paquetes WP-0.1 a WP-6.4 con dependencias, criterios de aceptación y plantillas de prompts para subagentes).
+

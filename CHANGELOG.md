@@ -8,6 +8,7 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 ## [Sin publicar]
 
 ### Agregado
+- Carpeta de memoria y planes en `.agents/planes/` con `plan-maestro.md` (especificación completa de paquetes de trabajo WP-0.1 a WP-6.4 con plantillas de prompts para subagentes) y `memoria-estado.md` (resumen ejecutivo de estado y traspaso para futuros agentes de IA como Claude, Gemini, Grok, DeepSeek o GLM).
 - Binario CLI `apps/ferrite` con parseo declarativo (`clap` derive), trazado estructurado (`tracing` y `tracing-subscriber`), manejo robusto de interrupción limpia con `ctrlc` y reporte contextual con `anyhow`.
 - Subcomando `fake` con ticker de alta precisión sin deriva temporal (`--destino`, `--hz`, `--duracion-seg`) para emitir frames de marcha sintética fluida hacia VRChat OSC.
 - Módulo cinemático determinista (`sintetico`) con garantía matemática de cota vertical en pies ($Y \ge 0.05$ m), balanceo natural de cadera y braceo coordinado.
