@@ -1,0 +1,26 @@
+# Artefactos de compilación de Rust
+/target/
+**/*.rs.bk
+*.pdb
+
+# Grabaciones y modelos de FerriteVR
+*.ferrite
+/modelos/*.onnx
+/modelos/*.engine
+/grabaciones/
+
+# Configuración local de usuario
+/config/ferrite.toml
+!/config/ferrite.ejemplo.toml
+
+# Herramientas de desarrollo y editores
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Archivos temporales y de registro
+*.log
+/tmp/
