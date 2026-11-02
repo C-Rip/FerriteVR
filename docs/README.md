@@ -26,7 +26,7 @@ Recetas y procedimientos directos dirigidos a resolver problemas o configuracion
 
 ### 3. Referencia (`docs/referencia/`)
 Especificaciones técnicas rigurosas y descripciones de parámetros y protocolos:
-- *Trackers OSC de VRChat:* Direcciones de red, espacios de coordenadas, orden Euler y asignación de ranuras.
+- [Trackers OSC de VRChat](referencia/vrchat-osc-trackers.md): Direcciones de red, espacios de coordenadas, orden Euler y asignación de ranuras.
 - *Modelos de pose:* Detalles del modelo RTMPose Halpe26 ONNX, normalización y formato de entradas/salidas.
 - *Formato `.ferrite`:* Estructura de encabezado y flujo de compresión zstd para almacenamiento de sesiones de sensor.
 - *Configuración TOML:* Diccionario de opciones soportadas en el archivo de configuración.
@@ -35,7 +35,7 @@ Especificaciones técnicas rigurosas y descripciones de parámetros y protocolos
 Documentos de profundización conceptual, fundamentos teóricos y decisiones de ingeniería:
 - *Arquitectura del pipeline:* Funcionamiento de canales último-gana y presupuesto temporal de latencia (< 25 ms).
 - *El solver cinemático 3D:* Elevación mediante profundidad mediana, filtro One Euro adaptativo, bases ortonormales para rotaciones y mitigación de oclusiones.
-- *Herramientas para agentes:* Evaluación de fuentes y directrices para desarrollo asistido por IA.
+- [Herramientas para agentes](explicacion/herramientas-agente.md): Evaluación de fuentes y directrices para desarrollo asistido por IA.
 
 ---
 

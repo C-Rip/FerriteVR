@@ -8,6 +8,9 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 ## [Sin publicar]
 
 ### Agregado
+- Skills del workspace para desarrollo asistido en `.agents/skills/` (`rust-guidelines`, `ferrite-verificar`, `ferrite-docs`, `vrchat-osc`) con referencias vendorizadas.
+- Documento de explicación sobre estándares y herramientas de desarrollo para agentes en `docs/explicacion/herramientas-agente.md`.
+- Especificación técnica y matriz de verificación de trackers OSC de VRChat en `docs/referencia/vrchat-osc-trackers.md`.
 - Reglas del proyecto para agentes y desarrolladores en `AGENTS.md` (mapa de crates, comandos canónicos, convenciones de código en tiempo real y tipado, DoD y tabla de skills).
 - Estructura base del repositorio y licencias permisivas duales (MIT y Apache-2.0).
 - Guía de contribución (`CONTRIBUTING.md`) con flujo de trabajo sobre rama `dev`, Conventional Commits y Definition of Done.
@@ -20,3 +23,4 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 ### Corregido
 
 ### Eliminado
+- Archivos `.gitkeep` en `docs/explicacion/` y `docs/referencia/` tras incorporar documentación oficial.
