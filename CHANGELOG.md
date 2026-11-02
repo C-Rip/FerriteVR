@@ -8,6 +8,7 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 ## [Sin publicar]
 
 ### Agregado
+- Guía técnica de instalación de CUDA 13, cuDNN 9 y TensorRT en Nobara 44 (`docs/guias/instalar-cuda-tensorrt.md`) para aceleración de inferencia con ort en WP-4.4.
 - Configuración de herramientas de formateo y calidad: `rustfmt.toml` (Rust 2024, max 100 col), `clippy.toml`, `deny.toml` (auditoría de licencias y seguridad) y `_typos.toml` (corrección ortográfica adaptada a español).
 - Script canónico de verificación de calidad `scripts/verificar.sh` con detección modular de herramientas y workspace.
 - Hook de pre-commit local en `.githooks/pre-commit` para validación automatizada previa a cada confirmación.
@@ -27,4 +28,5 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 ### Corregido
 
 ### Eliminado
+- Archivo `.gitkeep` en `docs/guias/` tras incorporar la guía de instalación de CUDA y TensorRT.
 - Archivos `.gitkeep` en `docs/explicacion/` y `docs/referencia/` tras incorporar documentación oficial.
