@@ -8,6 +8,8 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 ## [Sin publicar]
 
 ### Agregado
+- Crate `ferrite-nucleo` con tipos de coordenadas tipados (`PosKinect` diestro, `PosUnity` siniestro), articulaciones (`Articulacion`), poses (`PoseArticulacion`), esqueleto temporal (`Esqueleto3D`) y funciones puras de conversión angular ZXY con normalización en `[-180.0, 180.0]`.
+- Suite exhaustiva de pruebas unitarias, doc-tests y pruebas basadas en propiedades con `proptest` para el núcleo matemático.
 - Workspace de Cargo inicializado en raíz con edición 2024, resolver v3, perfil release optimizado (LTO thin, 1 codegen-unit), dependencias compartidas y directrices estrictas de linting (`unsafe_code = "deny"`, `non_ascii_idents = "deny"`, `missing_docs = "warn"`).
 - Guía técnica de instalación de CUDA 13, cuDNN 9 y TensorRT en Nobara 44 (`docs/guias/instalar-cuda-tensorrt.md`) para aceleración de inferencia con ort en WP-4.4.
 - Configuración de herramientas de formateo y calidad: `rustfmt.toml` (Rust 2024, max 100 col), `clippy.toml`, `deny.toml` (auditoría de licencias y seguridad) y `_typos.toml` (corrección ortográfica adaptada a español).
