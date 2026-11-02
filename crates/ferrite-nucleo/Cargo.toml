@@ -1,0 +1,17 @@
+[package]
+name = "ferrite-nucleo"
+description = "Tipos compartidos, espacios de coordenadas y utilidades de FerriteVR"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+glam = { workspace = true }
+
+[dev-dependencies]
+proptest = { workspace = true }

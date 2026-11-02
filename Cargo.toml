@@ -1,0 +1,38 @@
+[workspace]
+resolver = "3"
+members = ["crates/*", "apps/*"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/C-Rip/FerriteVR"
+rust-version = "1.85"
+
+[workspace.dependencies]
+glam = "0.29"
+rosc = "0.10"
+crossbeam-channel = "0.5"
+serde = { version = "1.0", features = ["derive"] }
+toml = "0.8"
+thiserror = "2.0"
+anyhow = "1.0"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+clap = { version = "4.5", features = ["derive"] }
+ctrlc = "3.4"
+proptest = "1.5"
+
+[workspace.lints.rust]
+unsafe_code = "deny"
+missing_docs = "warn"
+non_ascii_idents = "deny"
+
+[workspace.lints.clippy]
+unwrap_used = "warn"
+expect_used = "warn"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+debug = 1

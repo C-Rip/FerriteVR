@@ -8,6 +8,7 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 ## [Sin publicar]
 
 ### Agregado
+- Workspace de Cargo inicializado en raíz con edición 2024, resolver v3, perfil release optimizado (LTO thin, 1 codegen-unit), dependencias compartidas y directrices estrictas de linting (`unsafe_code = "deny"`, `non_ascii_idents = "deny"`, `missing_docs = "warn"`).
 - Guía técnica de instalación de CUDA 13, cuDNN 9 y TensorRT en Nobara 44 (`docs/guias/instalar-cuda-tensorrt.md`) para aceleración de inferencia con ort en WP-4.4.
 - Configuración de herramientas de formateo y calidad: `rustfmt.toml` (Rust 2024, max 100 col), `clippy.toml`, `deny.toml` (auditoría de licencias y seguridad) y `_typos.toml` (corrección ortográfica adaptada a español).
 - Script canónico de verificación de calidad `scripts/verificar.sh` con detección modular de herramientas y workspace.
@@ -24,6 +25,7 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 - Estructura de documentación del proyecto siguiendo el marco Diátaxis en `docs/`.
 
 ### Cambiado
+- Formato de `deny.toml` adaptado a la especificación de `cargo-deny` 0.20 manteniendo la denegación de licencias GPL/AGPL y verificación de avisos de seguridad.
 
 ### Corregido
 
