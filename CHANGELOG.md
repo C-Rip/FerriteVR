@@ -8,6 +8,9 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 ## [Sin publicar]
 
 ### Agregado
+- Crate `ferrite-osc` para emisión atómica de trackers hacia VRChat por UDP mediante paquetes bundle de OSC (`rosc`), con mapeo determinista de ranuras (`1..=8` y `head`), validación estricta de límites sin pánico y filtrado de articulaciones por confianza.
+- Documento de directrices y convenciones OSC de VRChat en `crates/ferrite-osc/AGENTS.md`.
+- Pruebas de integración UDP locales verificando codificación y decodificación de `OscBundle`, direcciones (`/tracking/trackers/*`) y tipos flotantes.
 - Crate `ferrite-nucleo` con tipos de coordenadas tipados (`PosKinect` diestro, `PosUnity` siniestro), articulaciones (`Articulacion`), poses (`PoseArticulacion`), esqueleto temporal (`Esqueleto3D`) y funciones puras de conversión angular ZXY con normalización en `[-180.0, 180.0]`.
 - Suite exhaustiva de pruebas unitarias, doc-tests y pruebas basadas en propiedades con `proptest` para el núcleo matemático.
 - Workspace de Cargo inicializado en raíz con edición 2024, resolver v3, perfil release optimizado (LTO thin, 1 codegen-unit), dependencias compartidas y directrices estrictas de linting (`unsafe_code = "deny"`, `non_ascii_idents = "deny"`, `missing_docs = "warn"`).
