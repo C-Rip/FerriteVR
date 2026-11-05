@@ -94,7 +94,16 @@ A la fecha, se completaron con éxito las siguientes fases:
   - Documento de arquitectura en `docs/explicacion/solver.md`.
   - 5 pruebas unitarias exhaustivas validando filtrado, estabilidad y coherencia cinemática.
 
-**Resultado de verificación:** `./scripts/verificar.sh` pasa al 100% (38 tests en verde, 11 doc-tests, 0 advertencias en rustdoc, licencias validadas con `cargo deny`, 0 fallos ortográficos).
+### F6: Integración del Pipeline en CLI (`apps/ferrite`)
+- **Conexión completa de punta a punta (Sensor -> Pose 2D -> Solver 3D -> OSC VRChat):**
+  - Orquestador `pipeline.rs` con ciclo continuo a 30 FPS sin deriva temporal, cero asignaciones en caliente y reporte de telemetría de latencia en tiempo real.
+  - Subcomando `reproducir`: reproduce archivos grabados `.ferrite` (con soporte para `--bucle`) o fotogramas sintéticos hacia VRChat (`127.0.0.1:9000`).
+  - Subcomando `grabar`: graba sesiones de prueba comprimidas con `zstd` en formato `.ferrite` (60 cuadros en ~320 KB).
+  - Subcomando `bench`: evalúa latencias p50/p90/p99 sobre el pipeline completo. **Resultado en CPU en modo release: 14.63 ms p50 y 65.7 FPS globales**, superando con holgura el objetivo de latencia de < 25 ms.
+  - Subcomando `run`: preparado para hardware y con opción `--sintetico` para ejecución directa.
+  - Manejo unificado y seguro de señal Ctrl+C (`ctrlc`) para parada limpia.
+
+**Resultado de verificación:** `./scripts/verificar.sh` pasa al 100% (36 tests unitarios, 11 doc-tests = 47 pruebas en verde, 0 advertencias en rustdoc, licencias validadas con `cargo deny`, 0 fallos ortográficos).
 
 ---
 
@@ -116,10 +125,10 @@ El plan maestro detallado con todos los paquetes de trabajo está en `.agents/pl
 
 | Si el Kinect físico... | Paquete a ejecutar | Descripción resumida |
 |---|---|---|
-| **AÚN NO HA LLEGADO** (Desarrollo sin hardware) | **Conexión completa del pipeline** (CLI `ferrite reproducir`) | Conectar `ferrite-sensor` -> `ferrite-pose` -> `ferrite-solver` -> `ferrite-osc` en el binario CLI para reproducir una sesión sintética o grabada hacia VRChat en tiempo real. |
-| **AÚN NO HA LLEGADO** | **WP-5.4** (Mitigación de oclusión en solver) | Lógica de detección de giro de espaldas (visibilidad facial / hombros) y decaimiento suave de confianza. |
+| **AÚN NO HA LLEGADO** (Desarrollo sin hardware) | **WP-5.4** (Mitigación de oclusión en solver) | Lógica de detección de giro de espaldas (visibilidad facial / hombros) y decaimiento suave de confianza. |
+| **AÚN NO HA LLEGADO** | **WP-5.5** (Calibración automática) | Calibración de altura e inclinación del sensor y proporciones corporales en pose en T. |
 | **YA LLEGÓ EL KINECT** | **WP-3.1** (`ferrite-freenect2-sys`) | Compilar `libfreenect2` en el sistema (WP-1.1), crear el puente seguro `cxx` en `crates/ferrite-freenect2-sys` (detrás de la feature `kinect`). |
-| **YA LLEGÓ EL KINECT** | **WP-3.3** (`FuenteKinect` + CLI grabar/reproducir) | Implementar `FuenteKinect` sobre el puente `cxx` y los subcomandos `ferrite grabar` y `ferrite reproducir`. |
+| **YA LLEGÓ EL KINECT** | **WP-3.3** (`FuenteKinect` en vivo) | Conectar `FuenteKinect` sobre el puente `cxx` a `ferrite run` y `ferrite grabar`. |
 
 ---
 

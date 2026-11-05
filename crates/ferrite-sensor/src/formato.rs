@@ -3,7 +3,7 @@
 //! Un archivo `.ferrite` se compone de un encabezado de 48 bytes seguido de
 //! una secuencia consecutiva de fotogramas comprimidos individualmente con `zstd`.
 
-use std::io::{Read, Write};
+use std::io::{Read, Seek, SeekFrom, Write};
 use ferrite_nucleo::IntrinsecosProfundidad;
 use crate::{ErrorSensor, FrameSensor};
 
@@ -311,5 +311,15 @@ impl<R: Read> LectorFerrite<R> {
         } else {
             Ok(None)
         }
+    }
+}
+
+impl<R: Read + Seek> LectorFerrite<R> {
+    /// Rebobina el lector al primer fotograma de la grabación (justo después del encabezado).
+    pub fn rebobinar(&mut self) -> Result<(), ErrorSensor> {
+        self.lector
+            .seek(SeekFrom::Start(TAMANO_ENCABEZADO as u64))
+            .map_err(ErrorSensor::Io)?;
+        Ok(())
     }
 }

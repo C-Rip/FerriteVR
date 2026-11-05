@@ -13,6 +13,9 @@ workspace = true
 [dependencies]
 ferrite-nucleo = { path = "../../crates/ferrite-nucleo" }
 ferrite-osc = { path = "../../crates/ferrite-osc" }
+ferrite-sensor = { path = "../../crates/ferrite-sensor" }
+ferrite-pose = { path = "../../crates/ferrite-pose" }
+ferrite-solver = { path = "../../crates/ferrite-solver" }
 clap = { workspace = true }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }

@@ -21,6 +21,21 @@ pub enum BackendInferencia {
     TensorRt,
 }
 
+impl std::str::FromStr for BackendInferencia {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_ascii_lowercase().as_str() {
+            "cpu" => Ok(Self::Cpu),
+            "cuda" => Ok(Self::Cuda),
+            "tensorrt" | "trt" => Ok(Self::TensorRt),
+            otro => Err(format!(
+                "Backend desconocido: '{otro}'. Opciones: 'cpu', 'cuda', 'tensorrt'"
+            )),
+        }
+    }
+}
+
 /// Motor de inferencia de pose 2D basado en RTMPose-m (Halpe26).
 pub struct MotorPose {
     session: Session,

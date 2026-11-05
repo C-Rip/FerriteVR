@@ -7,9 +7,14 @@
 #![deny(unsafe_code)]
 #![warn(missing_docs)]
 
+mod bench;
+mod grabar;
+mod pipeline;
+mod reproducir;
 mod sintetico;
 
 use std::net::SocketAddr;
+use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
@@ -18,6 +23,10 @@ use anyhow::{bail, Context, Result};
 use clap::{Parser, Subcommand};
 use ferrite_osc::{muestras_desde_esqueleto, EmisorVrchat};
 use tracing::{info, warn};
+
+use bench::{ejecutar_bench, OpcionesBench};
+use grabar::ejecutar_grabar;
+use reproducir::{ejecutar_reproducir, OpcionesReproducir};
 
 /// Interfaz de línea de comandos de FerriteVR.
 #[derive(Debug, Parser)]
@@ -35,7 +44,7 @@ struct Cli {
 /// Subcomandos disponibles en la CLI de FerriteVR.
 #[derive(Debug, Subcommand)]
 enum Comandos {
-    /// Genera y emite un esqueleto sintético de caminata para pruebas en VRChat sin sensor físico.
+    /// Genera y emite un esqueleto sintético de caminata para pruebas en VRChat sin sensor físico ni inferencia.
     Fake {
         /// Dirección de red y puerto UDP del receptor OSC de VRChat.
         #[arg(short, long, default_value = "127.0.0.1:9000")]
@@ -51,51 +60,210 @@ enum Comandos {
     },
 
     /// Ejecuta el pipeline completo de seguimiento corporal en tiempo real.
-    Run,
+    Run {
+        /// Ejecuta en modo sintético simulado si no hay hardware Kinect conectado.
+        #[arg(long, default_value_t = false)]
+        sintetico: bool,
+
+        /// Ruta al modelo ONNX RTMPose Halpe26.
+        #[arg(long, default_value = "modelos/rtmpose-m-halpe26.onnx")]
+        modelo: PathBuf,
+
+        /// Backend de inferencia (`cpu`, `cuda`, `tensorrt`).
+        #[arg(long, default_value = "cpu")]
+        backend: String,
+
+        /// Dirección de red y puerto UDP del receptor OSC de VRChat.
+        #[arg(short, long, default_value = "127.0.0.1:9000")]
+        destino: SocketAddr,
+
+        /// Frecuencia objetivo de muestreo en hercios (Hz).
+        #[arg(long, default_value_t = 30)]
+        hz: u32,
+
+        /// Duración máxima en segundos (opcional).
+        #[arg(long)]
+        duracion_seg: Option<u64>,
+    },
 
     /// Graba los flujos de profundidad y color en un archivo binario `.ferrite`.
-    Grabar,
+    Grabar {
+        /// Ruta de destino del archivo `.ferrite`.
+        #[arg(short, long, default_value = "sesion.ferrite")]
+        salida: PathBuf,
 
-    /// Reproduce una sesión grabada previamente para depuración y pruebas sin sensor.
-    Reproducir,
+        /// Duración de la grabación en segundos.
+        #[arg(short, long, default_value_t = 10)]
+        segundos: u64,
 
-    /// Mide la latencia de inferencia y procesado entre los distintos backends de cómputo.
-    Bench,
+        /// Graba fotogramas sintéticos de prueba sin sensor Kinect v2 físico.
+        #[arg(long, default_value_t = false)]
+        sintetico: bool,
+
+        /// Frecuencia de muestreo en hercios (Hz).
+        #[arg(long, default_value_t = 30)]
+        hz: u32,
+    },
+
+    /// Reproduce una sesión grabada previamente o fotogramas sintéticos ejecutando inferencia y solver hacia VRChat.
+    Reproducir {
+        /// Ruta al archivo de sesión `.ferrite` a reproducir.
+        #[arg(value_name = "ARCHIVO")]
+        archivo: Option<PathBuf>,
+
+        /// Ejecuta fotogramas sintéticos si no se especifica un archivo grabado.
+        #[arg(long, default_value_t = false)]
+        sintetico: bool,
+
+        /// Ruta al modelo ONNX RTMPose Halpe26.
+        #[arg(long, default_value = "modelos/rtmpose-m-halpe26.onnx")]
+        modelo: PathBuf,
+
+        /// Backend de inferencia (`cpu`, `cuda`, `tensorrt`).
+        #[arg(long, default_value = "cpu")]
+        backend: String,
+
+        /// Dirección de red y puerto UDP del receptor OSC de VRChat.
+        #[arg(short, long, default_value = "127.0.0.1:9000")]
+        destino: SocketAddr,
+
+        /// Frecuencia objetivo de reproducción en hercios (Hz).
+        #[arg(long, default_value_t = 30)]
+        hz: u32,
+
+        /// Duración máxima en segundos (opcional).
+        #[arg(long)]
+        duracion_seg: Option<u64>,
+
+        /// Reproduce en bucle infinito sobre el archivo de sesión grabado.
+        #[arg(short, long, default_value_t = false)]
+        bucle: bool,
+    },
+
+    /// Mide la latencia de inferencia y procesado del solver en el sistema.
+    Bench {
+        /// Cantidad de iteraciones a promediar.
+        #[arg(short, long, default_value_t = 100)]
+        iteraciones: usize,
+
+        /// Ruta al modelo ONNX RTMPose Halpe26.
+        #[arg(long, default_value = "modelos/rtmpose-m-halpe26.onnx")]
+        modelo: PathBuf,
+
+        /// Backend de inferencia (`cpu`, `cuda`, `tensorrt`).
+        #[arg(long, default_value = "cpu")]
+        backend: String,
+    },
 }
 
 fn main() -> Result<()> {
     tracing_subscriber::fmt()
         .with_env_filter(
             tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("info")),
+                .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("ferrite=info,warn")),
         )
         .init();
 
     let cli = Cli::parse();
+
+    let cancelar = Arc::new(AtomicBool::new(false));
+    let r = cancelar.clone();
+    ctrlc::set_handler(move || {
+        r.store(true, Ordering::SeqCst);
+    })
+    .context("Error al registrar el manejador de interrupcion Ctrl+C")?;
 
     match cli.comando {
         Comandos::Fake {
             destino,
             hz,
             duracion_seg,
-        } => ejecutar_fake(destino, hz, duracion_seg),
-        Comandos::Run => {
-            bail!("El subcomando 'run' aun no esta implementado (se completara en la Fase 6)")
+        } => ejecutar_fake(destino, hz, duracion_seg, cancelar),
+
+        Comandos::Run {
+            sintetico,
+            modelo,
+            backend,
+            destino,
+            hz,
+            duracion_seg,
+        } => {
+            if !sintetico {
+                bail!(
+                    "El controlador para hardware Kinect v2 fisico se conectara en la Fase 3 tras compilar libfreenect2.\n\
+                     Para ejecutar el pipeline completo de seguimiento corporal (vision + solver + OSC) ahora mismo,\n\
+                     agrega la bandera '--sintetico':\n\
+                     cargo run -p ferrite -- run --sintetico\n\
+                     o reproduce una sesion con:\n\
+                     cargo run -p ferrite -- reproducir sesion.ferrite"
+                );
+            }
+
+            let opciones = OpcionesReproducir {
+                archivo: None,
+                sintetico: true,
+                ruta_modelo: modelo,
+                backend_str: backend,
+                destino,
+                hz,
+                duracion_seg,
+                bucle: false,
+            };
+            ejecutar_reproducir(opciones, cancelar)
         }
-        Comandos::Grabar => {
-            bail!("El subcomando 'grabar' aun no esta implementado (se completara en el WP-3.3)")
+
+        Comandos::Grabar {
+            salida,
+            segundos,
+            sintetico,
+            hz,
+        } => ejecutar_grabar(salida, segundos, sintetico, hz, cancelar),
+
+        Comandos::Reproducir {
+            archivo,
+            sintetico,
+            modelo,
+            backend,
+            destino,
+            hz,
+            duracion_seg,
+            bucle,
+        } => {
+            let opciones = OpcionesReproducir {
+                archivo,
+                sintetico,
+                ruta_modelo: modelo,
+                backend_str: backend,
+                destino,
+                hz,
+                duracion_seg,
+                bucle,
+            };
+            ejecutar_reproducir(opciones, cancelar)
         }
-        Comandos::Reproducir => {
-            bail!("El subcomando 'reproducir' aun no esta implementado (se completara en el WP-3.3)")
-        }
-        Comandos::Bench => {
-            bail!("El subcomando 'bench' aun no esta implementado (se completara en el WP-4.4)")
+
+        Comandos::Bench {
+            iteraciones,
+            modelo,
+            backend,
+        } => {
+            let opciones = OpcionesBench {
+                iteraciones,
+                ruta_modelo: modelo,
+                backend_str: backend,
+            };
+            ejecutar_bench(opciones)
         }
     }
 }
 
 /// Ejecuta el bucle de emisión sintética sin deriva temporal.
-fn ejecutar_fake(destino: SocketAddr, hz: u32, duracion_seg: Option<u64>) -> Result<()> {
+fn ejecutar_fake(
+    destino: SocketAddr,
+    hz: u32,
+    duracion_seg: Option<u64>,
+    cancelar: Arc<AtomicBool>,
+) -> Result<()> {
     if hz == 0 {
         bail!("La frecuencia de emision debe ser mayor a 0 Hz");
     }
@@ -107,14 +275,6 @@ fn ejecutar_fake(destino: SocketAddr, hz: u32, duracion_seg: Option<u64>) -> Res
     let emisor = EmisorVrchat::nuevo(destino)
         .with_context(|| format!("No se pudo inicializar el socket UDP hacia {destino}"))?;
 
-    let ejecutando = Arc::new(AtomicBool::new(true));
-    let r = ejecutando.clone();
-
-    ctrlc::set_handler(move || {
-        r.store(false, Ordering::SeqCst);
-    })
-    .context("Error al registrar el manejador de interrupcion Ctrl+C")?;
-
     let periodo = Duration::from_secs_f64(1.0 / hz as f64);
     let inicio = Instant::now();
     let duracion_max = duracion_seg.map(Duration::from_secs);
@@ -122,7 +282,7 @@ fn ejecutar_fake(destino: SocketAddr, hz: u32, duracion_seg: Option<u64>) -> Res
 
     info!("Transmitiendo telemetria OSC. Presione Ctrl+C para detener.");
 
-    while ejecutando.load(Ordering::Relaxed) {
+    while !cancelar.load(Ordering::Relaxed) {
         if let Some(limite) = duracion_max {
             if inicio.elapsed() >= limite {
                 info!("Duracion programada alcanzada ({limite:?}). Finalizando emision.");

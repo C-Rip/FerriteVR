@@ -150,6 +150,28 @@ mod tests {
     }
 
     #[test]
+    fn test_reproduccion_con_repeticion() {
+        let generador = GeneradorSinteticoSensor::default();
+        let bytes = generador
+            .crear_grabacion_en_memoria(2)
+            .expect("Crear grabacion sintetica");
+
+        let mut reproductor =
+            FuenteReproduccion::abrir(Cursor::new(bytes))
+                .expect("Abrir reproduccion")
+                .con_sin_tiempo(true)
+                .con_repeticion(true);
+
+        // Debe leer los 2 frames originales, reiniciar en bucle y leer otros 2
+        for _ in 0..4 {
+            let frame = reproductor
+                .siguiente_frame(Duration::from_millis(100))
+                .expect("Lectura sin error");
+            assert!(frame.is_some());
+        }
+    }
+
+    #[test]
     fn test_deteccion_magic_invalido() {
         let mut bytes_corruptos = vec![0u8; 48];
         bytes_corruptos[0..4].copy_from_slice(b"NOPE");

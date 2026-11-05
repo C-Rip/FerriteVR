@@ -52,19 +52,24 @@ impl<R: Read + Seek> FuenteReproduccion<R> {
     pub fn rebobinar(&mut self) -> Result<(), ErrorSensor> {
         self.instante_inicio = None;
         self.marca_inicial_us = None;
-        // El lector interno está envuelto; necesitamos acceder a la posición 48
-        // Para hacerlo de forma segura, recreamos el lector tras rebobinar
-        // pero podemos hacer seek en self.lector si exponemos el flujo o seek directo.
-        Ok(())
+        self.lector.rebobinar()
     }
 }
 
-impl<R: Read + Send> FuenteFrames for FuenteReproduccion<R> {
+impl<R: Read + Seek + Send> FuenteFrames for FuenteReproduccion<R> {
     fn siguiente_frame(&mut self, _espera: Duration) -> Result<Option<FrameSensor>, ErrorSensor> {
         let frame_opt = self.lector.leer_frame()?;
 
-        let Some(frame) = frame_opt else {
-            return Ok(None);
+        let frame = match frame_opt {
+            Some(f) => f,
+            None if self.repetir => {
+                self.rebobinar()?;
+                match self.lector.leer_frame()? {
+                    Some(f) => f,
+                    None => return Ok(None),
+                }
+            }
+            None => return Ok(None),
         };
 
         // Si se requiere respetar las marcas de tiempo temporales

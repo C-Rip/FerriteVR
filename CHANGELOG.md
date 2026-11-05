@@ -8,6 +8,11 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 ## [Sin publicar]
 
 ### Agregado
+- Conexión del pipeline de seguimiento corporal en tiempo real en la CLI (`apps/ferrite`) unificando `ferrite-sensor` -> `ferrite-pose` -> `ferrite-solver` -> `ferrite-osc`.
+- Subcomando `reproducir` en CLI para emitir seguimiento de cuerpo completo desde archivos de sesión `.ferrite` o fotogramas sintéticos hacia VRChat OSC a 30 FPS.
+- Subcomando `grabar` en CLI para registrar sesiones de prueba comprimidas con `zstd` en formato `.ferrite`.
+- Subcomando `bench` en CLI para medición comparativa de latencias p50/p90/p99 y tasa de fotogramas global (alcanzando 65.7 FPS y 14.63 ms p50 en CPU release).
+- Rebobinado y reproducción en bucle continuo (`--bucle`) en `LectorFerrite` y `FuenteReproduccion`.
 - Crate `ferrite-solver` con elevación 3D y desproyección estenopeica mediante muestreo de mediana $5 \times 5$, filtro adaptativo temporal One Euro para posiciones y rotaciones (SLERP), cálculo de bases ortonormales anatómicas para cadera y pies con Gram-Schmidt sin división por cero ni `NaN`, y orquestación integral en `SolverCinematico`.
 - Documento de explicación de la arquitectura cinemática 3D en `docs/explicacion/solver.md`.
 - Motor de inferencia neuronal `MotorPose` con ONNX Runtime (`ort`) para RTMPose-m (Halpe26) y decodificador SimCC (`argmax` a medio píxel) que extrae los 26 puntos clave 2D con su nivel de confianza y los reproyecta al espacio original del sensor.
