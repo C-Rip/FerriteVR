@@ -1,15 +1,22 @@
 # lychee.toml - Configuración de comprobación de enlaces para FerriteVR
 
+# Rutas excluidas de escaneo de archivos
+exclude_path = [
+    "target",
+    ".git",
+]
+
 # Dominios y expresiones excluidas de comprobacion
 exclude = [
     # Dominios de ejemplo en plantillas
     '^https?://example\.com',
     # Sitios protegidos por Cloudflare o WAF que devuelven 403 a bots de CI
     '^https://creators\.vrchat\.com/.*',
+    '^https?://.*\.adobe\.com/.*',
 ]
 
-# Códigos de estado HTTP aceptados
-accept = [200, 204, 301, 302, 307, 308]
+# Códigos de estado HTTP aceptados (sitios que devuelven 403 por protección anti-bot)
+accept = [200, 204, 301, 302, 307, 308, 403]
 
 # Reintentos ante fallos temporales de red
 max_retries = 3
