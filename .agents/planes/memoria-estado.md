@@ -62,7 +62,18 @@ A la fecha, se completaron con éxito las siguientes fases:
   - Manejo de Ctrl+C limpio (`ctrlc`) y emisión sin deriva de reloj.
   - 3 pruebas unitarias probando el generador sintético.
 
-**Resultado de verificación:** `./scripts/verificar.sh` pasa al 100% (20 tests en verde, 0 advertencias en rustdoc, licencias validadas con `cargo deny`, 0 fallos ortográficos).
+### F3: Sensores y Grabación (Parte A sin hardware)
+- **`crates/ferrite-sensor` (WP-3.2):**
+  - Trait `FuenteFrames` unificando hardware físico y archivos de sesión.
+  - Estructura `FrameSensor` con preasignación y método `asegurar_dimensiones` para garantizar cero asignaciones en caliente.
+  - Formato de archivo binario `.ferrite` (encabezado versionado de 48 bytes + fotogramas comprimidos individualmente con `zstd`).
+  - `GrabadorFerrite` y `LectorFerrite` optimizados para compresión por fotograma.
+  - `FuenteReproduccion` respetando marcas de tiempo en microsegundos o a máxima velocidad (`sin_tiempo`).
+  - `GeneradorSinteticoSensor` para pruebas sin hardware simulando una figura humana en profundidad oscilando a 1 Hz.
+  - 7 pruebas (6 unitarias + 1 doc-test).
+  - Especificación técnica completa en `docs/referencia/formato-ferrite.md`.
+
+**Resultado de verificación:** `./scripts/verificar.sh` pasa al 100% (27 tests en verde, 9 doc-tests, 0 advertencias en rustdoc, licencias validadas con `cargo deny`, 0 fallos ortográficos).
 
 ---
 
@@ -84,10 +95,10 @@ El plan maestro detallado con todos los paquetes de trabajo está en `.agents/pl
 
 | Si el Kinect físico... | Paquete a ejecutar | Descripción resumida |
 |---|---|---|
-| **AÚN NO HA LLEGADO** (Desarrollo sin hardware) | **WP-3.2** (`ferrite-sensor`: trait + reproducción) | Crear el crate `crates/ferrite-sensor` con el trait `FuenteFrames`, la estructura `FrameSensor`, el formato `.ferrite` comprimido con zstd, `FuenteReproduccion` y un generador sintético de frames para tests. |
-| **AÚN NO HA LLEGADO** | **F5** (Solver cinemático 3D) | Se puede avanzar con `crates/ferrite-solver`: elevación 3D (WP-5.1), filtro One Euro (WP-5.2), cálculo de bases ortonormales para rotaciones de cadera y pies (WP-5.3), y mitigación de oclusiones/giro de espaldas (WP-5.4). |
+| **AÚN NO HA LLEGADO** (Desarrollo sin hardware) | **WP-4.1** (Modelos ONNX RTMPose) | Crear script `scripts/descargar-modelos.sh` que descarga RTMPose-m Halpe26 ONNX verificando SHA-256, y documentar en `docs/referencia/modelos.md`. |
+| **AÚN NO HA LLEGADO** | **F5** (Solver cinemático 3D) | Avanzar con `crates/ferrite-solver`: elevación 3D (WP-5.1), filtro One Euro (WP-5.2), bases ortonormales para rotaciones (WP-5.3), y mitigación de oclusiones (WP-5.4). |
 | **YA LLEGÓ EL KINECT** | **WP-3.1** (`ferrite-freenect2-sys`) | Compilar `libfreenect2` en el sistema (WP-1.1), crear el puente seguro `cxx` en `crates/ferrite-freenect2-sys` (detrás de la feature `kinect`). |
-| **YA LLEGÓ EL KINECT** | **WP-3.3** (`FuenteKinect` + grabar/reproducir) | Implementar `FuenteKinect` sobre el puente `cxx` y los subcomandos `ferrite grabar` y `ferrite reproducir`. |
+| **YA LLEGÓ EL KINECT** | **WP-3.3** (`FuenteKinect` + CLI grabar/reproducir) | Implementar `FuenteKinect` sobre el puente `cxx` y los subcomandos `ferrite grabar` y `ferrite reproducir`. |
 
 ---
 

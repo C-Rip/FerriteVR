@@ -155,6 +155,102 @@ impl Esqueleto3D {
     }
 }
 
+/// Parámetros intrínsecos de la cámara de profundidad para desproyección 2D a 3D.
+///
+/// Modela el modelo de cámara estenopeica (*pinhole*) con distancias focales
+/// `(fx, fy)` y punto principal `(cx, cy)` expresados en píxeles.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct IntrinsecosProfundidad {
+    /// Ancho del fotograma de profundidad en píxeles.
+    pub ancho: u32,
+    /// Alto del fotograma de profundidad en píxeles.
+    pub alto: u32,
+    /// Distancia focal horizontal en píxeles ($f_x$).
+    pub fx: f32,
+    /// Distancia focal vertical en píxeles ($f_y$).
+    pub fy: f32,
+    /// Coordenada horizontal del centro óptico en píxeles ($c_x$).
+    pub cx: f32,
+    /// Coordenada vertical del centro óptico en píxeles ($c_y$).
+    pub cy: f32,
+}
+
+impl Default for IntrinsecosProfundidad {
+    /// Valores nominales típicos del sensor de profundidad de Kinect v2.
+    ///
+    /// - Resolución: 512 x 424 píxeles.
+    /// - Distancia focal: ~365.456 px en ambos ejes.
+    /// - Centro óptico: (256.0, 212.0) px.
+    #[inline]
+    fn default() -> Self {
+        Self {
+            ancho: 512,
+            alto: 424,
+            fx: 365.456,
+            fy: 365.456,
+            cx: 256.0,
+            cy: 212.0,
+        }
+    }
+}
+
+impl IntrinsecosProfundidad {
+    /// Desproyecta un píxel `(u, v)` con una profundidad en milímetros
+    /// al espacio tridimensional de la cámara Kinect [`PosKinect`] (sistema diestro, metros).
+    ///
+    /// En el espacio [`PosKinect`]:
+    /// - `+X` es a la derecha.
+    /// - `+Y` es hacia arriba.
+    /// - `+Z` apunta hacia el sensor (la escena visible se encuentra en `-Z`).
+    ///
+    /// ```
+    /// use ferrite_nucleo::{IntrinsecosProfundidad, PosKinect};
+    ///
+    /// let intr = IntrinsecosProfundidad::default();
+    /// // El punto en el centro óptico a 2 metros (2000 mm):
+    /// let pos = intr.desproyectar(intr.cx, intr.cy, 2000.0);
+    /// assert!((pos.0.x).abs() < 1e-4);
+    /// assert!((pos.0.y).abs() < 1e-4);
+    /// assert!((pos.0.z - (-2.0)).abs() < 1e-4);
+    /// ```
+    #[inline]
+    pub fn desproyectar(&self, u: f32, v: f32, prof_mm: f32) -> PosKinect {
+        let z_m = prof_mm * 0.001;
+        let x_m = (u - self.cx) * z_m / self.fx;
+        let y_m = -(v - self.cy) * z_m / self.fy;
+        PosKinect(Vec3::new(x_m, y_m, -z_m))
+    }
+
+    /// Proyecta una posición 3D en espacio [`PosKinect`] de vuelta a coordenadas de píxel `(u, v)`
+    /// y profundidad en milímetros.
+    ///
+    /// Retorna `None` si la posición se encuentra en o detrás del plano del sensor (`pos.0.z >= 0.0`).
+    ///
+    /// ```
+    /// use ferrite_nucleo::{IntrinsecosProfundidad, PosKinect};
+    /// use glam::Vec3;
+    ///
+    /// let intr = IntrinsecosProfundidad::default();
+    /// let pk = PosKinect(Vec3::new(0.5, -0.2, -2.5));
+    /// let (u, v, prof_mm) = intr.proyectar(pk).unwrap();
+    /// let pk_reconstruido = intr.desproyectar(u, v, prof_mm);
+    /// assert!((pk.0.x - pk_reconstruido.0.x).abs() < 1e-4);
+    /// assert!((pk.0.y - pk_reconstruido.0.y).abs() < 1e-4);
+    /// assert!((pk.0.z - pk_reconstruido.0.z).abs() < 1e-4);
+    /// ```
+    #[inline]
+    pub fn proyectar(&self, pos: PosKinect) -> Option<(f32, f32, f32)> {
+        if pos.0.z >= 0.0 {
+            return None;
+        }
+        let z_m = -pos.0.z;
+        let u = (pos.0.x * self.fx / z_m) + self.cx;
+        let v = (-pos.0.y * self.fy / z_m) + self.cy;
+        let prof_mm = z_m * 1000.0;
+        Some((u, v, prof_mm))
+    }
+}
+
 /// Normaliza un ángulo en grados sexagesimales al intervalo semiabierto `[-180.0, 180.0]`.
 #[inline]
 fn normalizar_angulo_grados(grados: f32) -> f32 {
@@ -299,6 +395,29 @@ mod tests {
                 euler
             );
         }
+    }
+
+    #[test]
+    fn test_intrinsecos_valores_por_defecto_y_proyeccion() {
+        let intr = IntrinsecosProfundidad::default();
+        assert_eq!(intr.ancho, 512);
+        assert_eq!(intr.alto, 424);
+
+        // Desproyección en el centro de la imagen a 1 metro
+        let pk = intr.desproyectar(intr.cx, intr.cy, 1000.0);
+        assert!(pk.0.x.abs() < 1e-4);
+        assert!(pk.0.y.abs() < 1e-4);
+        assert!((pk.0.z - (-1.0)).abs() < 1e-4);
+
+        // Proyección del mismo punto debe retornar el centro y 1000 mm
+        let (u, v, prof) = intr.proyectar(pk).expect("Debe ser proyectable");
+        assert!((u - intr.cx).abs() < 1e-4);
+        assert!((v - intr.cy).abs() < 1e-4);
+        assert!((prof - 1000.0).abs() < 1e-4);
+
+        // Puntos detrás del sensor deben retornar None
+        let detras = PosKinect(Vec3::new(0.0, 0.0, 1.0));
+        assert!(intr.proyectar(detras).is_none());
     }
 
     proptest! {

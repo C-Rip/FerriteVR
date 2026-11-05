@@ -8,6 +8,9 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 ## [Sin publicar]
 
 ### Agregado
+- Crate `ferrite-sensor` con el trait `FuenteFrames`, estructura `FrameSensor` (reutilización de buffers en caliente), formato de archivo de grabación binario comprimido con zstd (`.ferrite`), decodificador `LectorFerrite`, codificador `GrabadorFerrite`, reproductor en tiempo real `FuenteReproduccion` y generador sintético determinista `GeneradorSinteticoSensor`.
+- Especificación técnica del formato de grabación `.ferrite` en `docs/referencia/formato-ferrite.md`.
+- Estructura `IntrinsecosProfundidad` en `ferrite-nucleo` con métodos geométricos de proyección y desproyección estenopeica entre píxeles 2D y el espacio diestro `PosKinect`.
 - Carpeta de memoria y planes en `.agents/planes/` con `plan-maestro.md` (especificación completa de paquetes de trabajo WP-0.1 a WP-6.4 con plantillas de prompts para subagentes) y `memoria-estado.md` (resumen ejecutivo de estado y traspaso para futuros agentes de IA como Claude, Gemini, Grok, DeepSeek o GLM).
 - Binario CLI `apps/ferrite` con parseo declarativo (`clap` derive), trazado estructurado (`tracing` y `tracing-subscriber`), manejo robusto de interrupción limpia con `ctrlc` y reporte contextual con `anyhow`.
 - Subcomando `fake` con ticker de alta precisión sin deriva temporal (`--destino`, `--hz`, `--duracion-seg`) para emitir frames de marcha sintética fluida hacia VRChat OSC.
