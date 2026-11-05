@@ -251,6 +251,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "ferrite-pose"
+version = "0.1.0"
+dependencies = [
+ "ferrite-nucleo",
+ "ferrite-sensor",
+ "thiserror",
+ "tracing",
+]
+
+[[package]]
 name = "ferrite-sensor"
 version = "0.1.0"
 dependencies = [

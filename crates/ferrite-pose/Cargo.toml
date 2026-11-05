@@ -1,0 +1,17 @@
+[package]
+name = "ferrite-pose"
+description = "Inferencia de pose 2D con RTMPose y preprocesamiento de imagenes para FerriteVR"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+ferrite-nucleo = { path = "../ferrite-nucleo" }
+ferrite-sensor = { path = "../ferrite-sensor" }
+thiserror = { workspace = true }
+tracing = { workspace = true }
