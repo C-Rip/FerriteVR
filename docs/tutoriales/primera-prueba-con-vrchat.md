@@ -62,9 +62,9 @@ El emisor calculará y transmitirá de forma determinista y sin acumular deriva 
    - Tracker `4` (pecho)
    - Tracker `5` y `6` (rodillas)
    - Tracker `7` y `8` (codos)
-3. Abre el **Action Menu** y selecciona la opción **Calibrate FBT** (o pulsa la opción de calibración en el menú principal).
+3. Abre el **Menú Rápido (Quick Menu)** pulsando una vez el botón de menú `≡` en el mando izquierdo del Quest. En la pantalla principal de **Acceso Rápido (Launchpad)**, pulsa el botón **Calibrar** (con el icono cian de una figura humana, ubicado en la barra inferior al lado de *Reaparecer*).
 4. El avatar entrará en pose de calibración (pose en T o pose en I).
-5. Colócate físicamente de pie en el centro de tu área de juego, alinea tu cabeza con el visor y presiona simultáneamente **ambos gatillos** de los controladores de la Quest 3S.
+5. Colócate físicamente de pie en el centro de tu área de juego, alinea tu cuerpo con el avatar mirando al frente y presiona simultáneamente **ambos gatillos** de los mandos del Quest 3S (y confirma en el mensaje emergente si lo solicita).
 
 ---
 

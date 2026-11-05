@@ -71,16 +71,11 @@ A la fecha, se completaron con éxito las siguientes fases:
 El plan maestro detallado con todos los paquetes de trabajo está en `.agents/planes/plan-maestro.md`.
 
 ### A. Tareas manuales pendientes para el usuario humano
-1. **WP-2.4 Prueba en VRChat con Quest 3S + Steam Link:**
-   - Iniciar SteamVR y VRChat en el PC (con OSC habilitado en el Action Menu).
-   - Ponerse el visor Quest 3S vía Steam Link.
-   - Ejecutar en la terminal:
-     ```bash
-     cd ~/proyectos/FerriteVR
-     cargo run --release -p ferrite -- fake --destino 127.0.0.1:9000 --hz 30
-     ```
-   - Calibrar FBT frente a un espejo en VRChat y comprobar que las piernas del avatar caminan.
-2. **WP-1.1 Instalación de dependencias del sistema (cuando el usuario desee compilar con soporte de hardware):**
+1. ~~**WP-2.4 Prueba en VRChat con Quest 3S + Steam Link:**~~ **COMPLETADA CON ÉXITO (2026-11-04)**
+   - VRChat en Nobara 44 recibió correctamente la telemetría OSC atómica en `127.0.0.1:9000`.
+   - Se validó el reconocimiento de esferas y la calibración FBT completa con mandos de Quest 3S.
+   - El avatar reflejó el movimiento de marcha armónica sintética.
+2. **WP-1.1 Instalación de dependencias del sistema (cuando llegue el sensor físico o se requiera compilar con soporte de hardware):**
    ```bash
    sudo dnf install rustfmt clippy cmake libusb1-devel turbojpeg-devel ocl-icd-devel mesa-libGL-devel glfw-devel clang-devel
    ```
