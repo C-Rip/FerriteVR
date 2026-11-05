@@ -73,6 +73,11 @@ A la fecha, se completaron con éxito las siguientes fases:
   - 7 pruebas (6 unitarias + 1 doc-test).
   - Especificación técnica completa en `docs/referencia/formato-ferrite.md`.
 
+### F4: Estimación de Pose 2D (RTMPose Halpe26)
+- **Modelos y recursos (WP-4.1):**
+  - Script canónico `scripts/descargar-modelos.sh` con descarga automatizada del paquete oficial de OpenMMLab, extracción de `end2end.onnx` y validación estricta de hash SHA-256 (`26f3a19e61304a600dfb82d1001d41d24343b89fc70a33ffc84657e0b0bf2ecf`). Idempotente.
+  - Especificación técnica completa en `docs/referencia/modelos.md` documentando entrada normalizada NCHW (256x192), representación SimCC (vectores 1D horizontales y verticales a medio píxel) y tabla de correspondencia de las 26 articulaciones hacia los trackers OSC de VRChat.
+
 **Resultado de verificación:** `./scripts/verificar.sh` pasa al 100% (27 tests en verde, 9 doc-tests, 0 advertencias en rustdoc, licencias validadas con `cargo deny`, 0 fallos ortográficos).
 
 ---
@@ -95,7 +100,7 @@ El plan maestro detallado con todos los paquetes de trabajo está en `.agents/pl
 
 | Si el Kinect físico... | Paquete a ejecutar | Descripción resumida |
 |---|---|---|
-| **AÚN NO HA LLEGADO** (Desarrollo sin hardware) | **WP-4.1** (Modelos ONNX RTMPose) | Crear script `scripts/descargar-modelos.sh` que descarga RTMPose-m Halpe26 ONNX verificando SHA-256, y documentar en `docs/referencia/modelos.md`. |
+| **AÚN NO HA LLEGADO** (Desarrollo sin hardware) | **WP-4.2** (`ferrite-pose`) | Inferencia ONNX (`ort`) para RTMPose-m: preprocesamiento NCHW normalizado, ejecución de grafo y decodificación SimCC a puntos 2D y confianza. |
 | **AÚN NO HA LLEGADO** | **F5** (Solver cinemático 3D) | Avanzar con `crates/ferrite-solver`: elevación 3D (WP-5.1), filtro One Euro (WP-5.2), bases ortonormales para rotaciones (WP-5.3), y mitigación de oclusiones (WP-5.4). |
 | **YA LLEGÓ EL KINECT** | **WP-3.1** (`ferrite-freenect2-sys`) | Compilar `libfreenect2` en el sistema (WP-1.1), crear el puente seguro `cxx` en `crates/ferrite-freenect2-sys` (detrás de la feature `kinect`). |
 | **YA LLEGÓ EL KINECT** | **WP-3.3** (`FuenteKinect` + CLI grabar/reproducir) | Implementar `FuenteKinect` sobre el puente `cxx` y los subcomandos `ferrite grabar` y `ferrite reproducir`. |

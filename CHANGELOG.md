@@ -8,6 +8,8 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 ## [Sin publicar]
 
 ### Agregado
+- Script canónico `scripts/descargar-modelos.sh` para descarga idempotente y verificación de suma SHA-256 de RTMPose-m (Halpe26) en formato ONNX.
+- Especificación técnica del modelo de estimación de pose en `docs/referencia/modelos.md` detallando entradas normalizadas, representación SimCC de 26 articulaciones y su correspondencia con las ranuras de seguimiento de VRChat.
 - Crate `ferrite-sensor` con el trait `FuenteFrames`, estructura `FrameSensor` (reutilización de buffers en caliente), formato de archivo de grabación binario comprimido con zstd (`.ferrite`), decodificador `LectorFerrite`, codificador `GrabadorFerrite`, reproductor en tiempo real `FuenteReproduccion` y generador sintético determinista `GeneradorSinteticoSensor`.
 - Especificación técnica del formato de grabación `.ferrite` en `docs/referencia/formato-ferrite.md`.
 - Estructura `IntrinsecosProfundidad` en `ferrite-nucleo` con métodos geométricos de proyección y desproyección estenopeica entre píxeles 2D y el espacio diestro `PosKinect`.
