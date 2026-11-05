@@ -8,10 +8,11 @@
 #![deny(non_ascii_idents)]
 #![deny(unsafe_code)]
 #![warn(missing_docs)]
+#![cfg_attr(test, allow(clippy::unwrap_used, clippy::expect_used))]
 
 use std::net::{SocketAddr, UdpSocket};
 
-use ferrite_nucleo::{cuaternion_a_euler_zxy_grados, Articulacion, Esqueleto3D};
+use ferrite_nucleo::{Articulacion, Esqueleto3D, cuaternion_a_euler_zxy_grados};
 use rosc::{OscBundle, OscMessage, OscPacket, OscTime, OscType};
 use thiserror::Error;
 
@@ -202,12 +203,22 @@ impl EmisorVrchat {
 
             let msg_pos = OscPacket::Message(OscMessage {
                 addr: format!("{base}/position"),
-                args: muestra.posicion.iter().copied().map(OscType::Float).collect(),
+                args: muestra
+                    .posicion
+                    .iter()
+                    .copied()
+                    .map(OscType::Float)
+                    .collect(),
             });
 
             let msg_rot = OscPacket::Message(OscMessage {
                 addr: format!("{base}/rotation"),
-                args: muestra.euler_grados.iter().copied().map(OscType::Float).collect(),
+                args: muestra
+                    .euler_grados
+                    .iter()
+                    .copied()
+                    .map(OscType::Float)
+                    .collect(),
             });
 
             mensajes.push(msg_pos);
@@ -295,11 +306,7 @@ mod tests {
         let emisor = EmisorVrchat::nuevo(receptor_addr).expect("falla al crear emisor");
 
         let muestras = vec![
-            MuestraTracker::nueva(
-                RanuraTracker::Cabeza,
-                [0.0, 1.72, 0.05],
-                [10.0, -5.0, 2.0],
-            ),
+            MuestraTracker::nueva(RanuraTracker::Cabeza, [0.0, 1.72, 0.05], [10.0, -5.0, 2.0]),
             MuestraTracker::nueva(
                 RanuraTracker::nueva_numerada(1).unwrap(),
                 [0.0, 1.01, -0.02],
@@ -307,7 +314,9 @@ mod tests {
             ),
         ];
 
-        emisor.enviar_frame(&muestras).expect("falla al enviar frame");
+        emisor
+            .enviar_frame(&muestras)
+            .expect("falla al enviar frame");
 
         // Recibir paquete en el receptor
         let mut buffer = [0u8; 4096];

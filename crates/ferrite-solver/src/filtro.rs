@@ -3,8 +3,8 @@
 //! Basado en el algoritmo clásico de Casiez, Roussel y Vogel (CHI 2012):
 //! *"1€ Filter: A Simple Speed-based Low-pass Filter for Computing with Noisy Input in Human-Computer Interfaces"*.
 
-use std::f32::consts::PI;
 use glam::{Quat, Vec3};
+use std::f32::consts::PI;
 
 /// Calcula el coeficiente alfa de suavizado para una frecuencia de corte y periodo temporal dados.
 #[inline]

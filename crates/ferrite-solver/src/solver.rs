@@ -1,13 +1,14 @@
 //! Pipeline integral del solver cinemático 3D.
 
-use std::collections::HashMap;
 use ferrite_nucleo::{
     Articulacion, Esqueleto3D, IntrinsecosProfundidad, PosUnity, PoseArticulacion,
 };
 use ferrite_pose::simcc::Pose2D;
 use ferrite_sensor::FrameSensor;
 use glam::Quat;
+use std::collections::HashMap;
 
+use crate::ErrorSolver;
 use crate::calibracion::CalibracionEspacio;
 use crate::elevacion::Elevador3D;
 use crate::filtro::{FiltroOneEuroVec3, FiltroRotacion};
@@ -15,7 +16,6 @@ use crate::oclusion::GestorOclusion;
 use crate::rotaciones::{
     calcular_rotacion_cadera, calcular_rotacion_pie_der, calcular_rotacion_pie_izq,
 };
-use crate::ErrorSolver;
 
 /// Solver cinemático completo que transforma estimaciones 2D y profundidad en un esqueleto 3D filtrado y calibrado.
 pub struct SolverCinematico {
@@ -120,7 +120,7 @@ impl SolverCinematico {
 
         // Si el sujeto está de espaldas, invertir yaw de cadera para mantener coherencia anatómica
         if GestorOclusion::detectar_espaldas(&esqueleto_elevado.articulaciones_halpe) {
-            rot_cadera = rot_cadera * Quat::from_rotation_y(std::f32::consts::PI);
+            rot_cadera *= Quat::from_rotation_y(std::f32::consts::PI);
         }
 
         for art in articulaciones {

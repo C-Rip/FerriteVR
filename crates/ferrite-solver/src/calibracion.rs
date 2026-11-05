@@ -139,7 +139,9 @@ mod tests {
 
         cal.aplicar_a_esqueleto(&mut esqueleto);
 
-        let pie = esqueleto.obtener(Articulacion::PieIzq).expect("Pie presente");
+        let pie = esqueleto
+            .obtener(Articulacion::PieIzq)
+            .expect("Pie presente");
         assert!(pie.posicion.0.y >= cal.cota_suelo_min_m);
     }
 }

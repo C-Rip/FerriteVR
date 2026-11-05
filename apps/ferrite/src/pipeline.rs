@@ -3,12 +3,12 @@
 //! Conecta una fuente de fotogramas ([`FuenteFrames`]), el motor de inferencia de pose 2D
 //! ([`MotorPose`]), el solver cinemático 3D ([`SolverCinematico`]) y el emisor OSC hacia VRChat ([`EmisorVrchat`]).
 
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::{Duration, Instant};
 
 use anyhow::{Context, Result};
-use ferrite_osc::{muestras_desde_esqueleto, EmisorVrchat};
+use ferrite_osc::{EmisorVrchat, muestras_desde_esqueleto};
 use ferrite_pose::MotorPose;
 use ferrite_sensor::FuenteFrames;
 use ferrite_solver::SolverCinematico;

@@ -9,6 +9,7 @@
 #![deny(non_ascii_idents)]
 #![deny(unsafe_code)]
 #![warn(missing_docs)]
+#![cfg_attr(test, allow(clippy::unwrap_used, clippy::expect_used))]
 
 pub mod calibracion;
 pub mod elevacion;
@@ -43,8 +44,8 @@ pub enum ErrorSolver {
 mod tests {
     use super::*;
     use ferrite_nucleo::{Articulacion, IntrinsecosProfundidad};
-    use ferrite_pose::simcc::{NUM_ARTICULACIONES_HALPE, Pose2D, PuntoClave2D};
     use ferrite_pose::CajaDelimitadora;
+    use ferrite_pose::simcc::{NUM_ARTICULACIONES_HALPE, Pose2D, PuntoClave2D};
     use ferrite_sensor::GeneradorSinteticoSensor;
     use glam::{Quat, Vec3};
 
@@ -162,12 +163,20 @@ mod tests {
             .resolver(&pose_2d, &frame)
             .expect("Resolución 3D exitosa");
 
-        assert!(esqueleto_3d.articulaciones.len() > 0);
+        assert!(!esqueleto_3d.articulaciones.is_empty());
 
         // Comprobar que todas las articulaciones generadas tienen valores finitos
         for (art, pose) in &esqueleto_3d.articulaciones {
-            assert!(pose.posicion.0.is_finite(), "Posición no finita en {:?}", art);
-            assert!(pose.rotacion.is_normalized(), "Rotación no normalizada en {:?}", art);
+            assert!(
+                pose.posicion.0.is_finite(),
+                "Posición no finita en {:?}",
+                art
+            );
+            assert!(
+                pose.rotacion.is_normalized(),
+                "Rotación no normalizada en {:?}",
+                art
+            );
             assert!(!pose.rotacion.is_nan(), "Rotación NaN en {:?}", art);
             assert!(pose.confianza >= 0.0 && pose.confianza <= 1.0);
         }

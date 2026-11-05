@@ -7,6 +7,10 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Sin publicar]
 
+### Corregido
+- Advertencias de Clippy (`needless_range_loop`, `assign_op_pattern`, `len_zero`) y formateo de código con `rustfmt` en todo el workspace para que la suite de verificación canónica termine con código 0.
+- Exención en pruebas (`cfg_attr(test, allow(clippy::unwrap_used, clippy::expect_used))`) para permitir aserciones directas en tests unitarios e integrados sin violar la prohibición en código de producción.
+
 ### Agregado
 - Calibración y alineación espacial (`CalibracionEspacio`) en `ferrite-solver` con elevación respecto al piso, recentrado en Z y corrección de inclinación (*pitch*) hacia el espacio de juego de VRChat.
 - Mitigación de oclusiones (`GestorOclusion`) con retención de últimas poses válidas, decaimiento exponencial suave y detección de orientación de espaldas.
