@@ -108,7 +108,7 @@ Para obtener la posición $(u, v)$ en píxeles de la imagen de entrada (256×192
 
 ## 6. Descarga y validación automatizada
 
-El script canónico [`scripts/descargar-modelos.sh`](file:///home/crivera/proyectos/FerriteVR/scripts/descargar-modelos.sh) descarga el archivo comprimido oficial, extrae el archivo ONNX y valida su suma SHA-256. Es completamente idempotente:
+El script canónico [`scripts/descargar-modelos.sh`](../../scripts/descargar-modelos.sh) descarga el archivo comprimido oficial, extrae el archivo ONNX y valida su suma SHA-256. Es completamente idempotente:
 
 ```bash
 ./scripts/descargar-modelos.sh

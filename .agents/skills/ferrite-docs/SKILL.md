@@ -41,7 +41,7 @@ Todo cambio que agregue, modifique, corrija o elimine funcionalidad debe registr
 Cuando se tome una decisión estructural, de dependencias o de arquitectura que comprometa el desarrollo futuro:
 
 1. **Numeración secuencial:** Identifica el número más alto en `docs/adr/` (ej. `0008`) e incrementa en uno con formato de 4 dígitos (ej. `0009-<nombre-descriptivo>.md`).
-2. **Plantilla estándar:** Copia la estructura de [`docs/adr/0000-plantilla.md`](../../docs/adr/0000-plantilla.md).
+2. **Plantilla estándar:** Copia la estructura de [`docs/adr/0000-plantilla.md`](../../../docs/adr/0000-plantilla.md).
 3. **Secciones obligatorias en español:**
    - **Título:** Formato `# ADR-XXXX: <Título>`
    - **Contexto y planteamiento del problema:** Motivación del cambio y restricciones técnicas.

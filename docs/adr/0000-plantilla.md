@@ -1,6 +1,6 @@
 # [Número y título del registro de decisión de arquitectura]
 
-* **Estado:** [propuesto | aceptado | rechazado | obsoleto | superado por [ADR-XXXX](XXXX-titulo.md)]
+* **Estado:** [propuesto | aceptado | rechazado | obsoleto | superado por ADR-XXXX]
 * **Fecha:** AAAA-MM-DD
 * **Decisores:** [Nombre o equipo involucrado]
 * **Consulta:** [Partes consultadas o informadas]

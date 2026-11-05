@@ -81,4 +81,4 @@ apps/
 ## Enlaces y referencias
 
 * [Cargo Workspaces Documentation](https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html)
-* [FerriteVR Plan Maestro v3 - Sección 1: Estructura objetivo del repositorio](../../brain/ff8a9e6d-0e68-49d8-b2db-d1d2c1174a44/ferritevr_plan.md)
+* [FerriteVR Plan Maestro v3 - Sección 1: Estructura objetivo del repositorio](../../.agents/planes/plan-maestro.md)

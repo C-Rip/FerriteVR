@@ -38,7 +38,7 @@ $$Z_m = \frac{z_{\text{med}}}{1000}$$
 
 $$X_m = \frac{(u - c_x) \cdot Z_m}{f_x}, \quad Y_m = -\frac{(v - c_y) \cdot Z_m}{f_y}$$
 
-El punto resultante se expresa en el espacio diestro de la cámara [`PosKinect`](file:///home/crivera/proyectos/FerriteVR/crates/ferrite-nucleo/src/lib.rs) y se transforma de inmediato al espacio métrico siniestro de Unity [`PosUnity`](file:///home/crivera/proyectos/FerriteVR/crates/ferrite-nucleo/src/lib.rs) invirtiendo el signo del eje $Z$.
+El punto resultante se expresa en el espacio diestro de la cámara [`PosKinect`](../../crates/ferrite-nucleo/src/lib.rs) y se transforma de inmediato al espacio métrico siniestro de Unity [`PosUnity`](../../crates/ferrite-nucleo/src/lib.rs) invirtiendo el signo del eje $Z$.
 
 ---
 
@@ -67,7 +67,7 @@ $$\hat{x}_t = \alpha \cdot x_t + (1 - \alpha) \cdot \hat{x}_{t-1}$$
 
 VRChat soporta tanto posición como orientación en las ranuras `/tracking/trackers/*`. Orientar adecuadamente la cadera y los pies es vital para que las piernas y la pelvis del avatar adopten posturas naturales al sentarse, girar o doblar los tobillos.
 
-El módulo [`rotaciones`](file:///home/crivera/proyectos/FerriteVR/crates/ferrite-solver/src/rotaciones.rs) genera matrices de rotación $3 \times 3$ mediante el proceso de ortonormalización de Gram-Schmidt:
+El módulo [`rotaciones`](../../crates/ferrite-solver/src/rotaciones.rs) genera matrices de rotación $3 \times 3$ mediante el proceso de ortonormalización de Gram-Schmidt:
 
 1. **Cadera (`Articulacion::Cadera`):**
    - Eje lateral horizontal: $\vec{X} = \text{CaderaDer} - \text{CaderaIzq}$.

@@ -7,7 +7,7 @@ description: Detalla las especificaciones del protocolo OSC de VRChat para segui
 
 Esta skill proporciona las especificaciones necesarias para interactuar con la API OSC de seguimiento corporal de VRChat, cubriendo transporte, formato de datos, espacio de coordenadas y convenciones de ranura.
 
-Para detalles técnicos y tablas de parámetros, consultar el documento complementario [`references/osc-trackers.md`](references/osc-trackers.md) y la especificación de referencia [`docs/referencia/vrchat-osc-trackers.md`](../../docs/referencia/vrchat-osc-trackers.md).
+Para detalles técnicos y tablas de parámetros, consultar el documento complementario [`references/osc-trackers.md`](references/osc-trackers.md) y la especificación de referencia [`docs/referencia/vrchat-osc-trackers.md`](../../../docs/referencia/vrchat-osc-trackers.md).
 
 ---
 

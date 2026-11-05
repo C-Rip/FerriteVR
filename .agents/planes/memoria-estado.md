@@ -86,7 +86,7 @@ A la fecha, se completaron con éxito las siguientes fases:
 
 ### F5: Solver Cinemático 3D (`ferrite-solver`)
 - **Elevación 3D, Filtrado y Rotaciones (WP-5.1 a WP-5.3):**
-  - Muestreo espacial por ventana mediana $5 \times 5$ (`Elevador3D`) que elimina ruido de bordes (*flying pixels*) y desproyecta píxeles 2D a posiciones métricas [`PosUnity`](file:///home/crivera/proyectos/FerriteVR/crates/ferrite-nucleo/src/lib.rs).
+  - Muestreo espacial por ventana mediana $5 \times 5$ (`Elevador3D`) que elimina ruido de bordes (*flying pixels*) y desproyecta píxeles 2D a posiciones métricas [`PosUnity`](../../crates/ferrite-nucleo/src/lib.rs).
   - Filtro adaptativo temporal `FiltroOneEuro` y `FiltroOneEuroVec3` ($f_{c,\min} = 1.0$ Hz, $\beta = 0.05$) con reducción de jitter en reposo $> 99\%$ y respuesta ultrarrápida ($< 1$ fotograma) ante movimientos bruscos.
   - Filtro adaptativo para rotaciones `FiltroRotacion` con interpolación esférica (SLERP) ponderada por velocidad angular.
   - Construcción de bases ortonormales anatómicas tipo Gram-Schmidt para cadera y pies sin división por cero ni `NaN`.

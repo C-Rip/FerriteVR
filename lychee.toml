@@ -1,0 +1,16 @@
+# lychee.toml - Configuración de comprobación de enlaces para FerriteVR
+
+# Dominios y patrones excluidos de comprobación
+exclude = [
+    # Dominios de ejemplo en plantillas
+    '^https?://example\.com',
+    # Sitios protegidos por Cloudflare o WAF que devuelven 403 a bots de CI
+    '^https://creators\.vrchat\.com/.*',
+]
+
+# Códigos de estado HTTP aceptados
+accept = [200, 204, 301, 302, 307, 308]
+
+# Reintentos ante fallos temporales de red
+max_retries = 3
+timeout = 10

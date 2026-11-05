@@ -63,5 +63,5 @@ Opción elegida: **Opción 2: Emisión OSC para VRChat** como alcance prioritari
 
 ## Enlaces y referencias
 
-* [VRChat OSC Trackers Documentation](https://creators.vrchat.com/features/osc/trackers/)
-* [Crate rosc (Rust OSC)](https://crates.io/crates/rosc)
+* [VRChat OSC Trackers Documentation](https://docs.vrchat.com/docs/osc-trackers)
+* [Crate rosc (Rust OSC)](https://docs.rs/rosc)

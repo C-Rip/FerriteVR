@@ -8,6 +8,7 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 ## [Sin publicar]
 
 ### Corregido
+- Enlaces relativos rotos, rutas absolutas `file://` y URLs remotas de documentación en Markdown, agregando archivo de configuración `lychee.toml` para que la validación de enlaces en CI pase con éxito.
 - Advertencias de Clippy (`needless_range_loop`, `assign_op_pattern`, `len_zero`) y formateo de código con `rustfmt` en todo el workspace para que la suite de verificación canónica termine con código 0.
 - Exención en pruebas (`cfg_attr(test, allow(clippy::unwrap_used, clippy::expect_used))`) para permitir aserciones directas en tests unitarios e integrados sin violar la prohibición en código de producción.
 
