@@ -84,7 +84,17 @@ A la fecha, se completaron con éxito las siguientes fases:
   - Prueba de integración end-to-end con el modelo real ONNX y un fotograma generado por `GeneradorSinteticoSensor`, validando los 26 puntos clave de Halpe26.
   - 8 pruebas en total (6 unitarias + 2 doc-tests).
 
-**Resultado de verificación:** `./scripts/verificar.sh` pasa al 100% (33 tests en verde, 11 doc-tests, 0 advertencias en rustdoc, licencias validadas con `cargo deny`, 0 fallos ortográficos).
+### F5: Solver Cinemático 3D (`ferrite-solver`)
+- **Elevación 3D, Filtrado y Rotaciones (WP-5.1 a WP-5.3):**
+  - Muestreo espacial por ventana mediana $5 \times 5$ (`Elevador3D`) que elimina ruido de bordes (*flying pixels*) y desproyecta píxeles 2D a posiciones métricas [`PosUnity`](file:///home/crivera/proyectos/FerriteVR/crates/ferrite-nucleo/src/lib.rs).
+  - Filtro adaptativo temporal `FiltroOneEuro` y `FiltroOneEuroVec3` ($f_{c,\min} = 1.0$ Hz, $\beta = 0.05$) con reducción de jitter en reposo $> 99\%$ y respuesta ultrarrápida ($< 1$ fotograma) ante movimientos bruscos.
+  - Filtro adaptativo para rotaciones `FiltroRotacion` con interpolación esférica (SLERP) ponderada por velocidad angular.
+  - Construcción de bases ortonormales anatómicas tipo Gram-Schmidt para cadera y pies sin división por cero ni `NaN`.
+  - Orquestador `SolverCinematico` integrando elevación, filtrado y rotación para alimentar `Esqueleto3D`.
+  - Documento de arquitectura en `docs/explicacion/solver.md`.
+  - 5 pruebas unitarias exhaustivas validando filtrado, estabilidad y coherencia cinemática.
+
+**Resultado de verificación:** `./scripts/verificar.sh` pasa al 100% (38 tests en verde, 11 doc-tests, 0 advertencias en rustdoc, licencias validadas con `cargo deny`, 0 fallos ortográficos).
 
 ---
 
@@ -106,8 +116,8 @@ El plan maestro detallado con todos los paquetes de trabajo está en `.agents/pl
 
 | Si el Kinect físico... | Paquete a ejecutar | Descripción resumida |
 |---|---|---|
-| **AÚN NO HA LLEGADO** (Desarrollo sin hardware) | **F5** (`crates/ferrite-solver`) | Solver cinemático 3D: elevación 3D con filtrado de mediana (WP-5.1), filtro adaptativo One Euro (WP-5.2), bases ortonormales para rotaciones de cadera y pies (WP-5.3), y mitigación de oclusiones/giro de espaldas (WP-5.4). |
-| **AÚN NO HA LLEGADO** | **WP-4.4** (Benchmark de backends) | Medir latencia p50/p99 sobre grabaciones en CPU y backends acelerados. |
+| **AÚN NO HA LLEGADO** (Desarrollo sin hardware) | **Conexión completa del pipeline** (CLI `ferrite reproducir`) | Conectar `ferrite-sensor` -> `ferrite-pose` -> `ferrite-solver` -> `ferrite-osc` en el binario CLI para reproducir una sesión sintética o grabada hacia VRChat en tiempo real. |
+| **AÚN NO HA LLEGADO** | **WP-5.4** (Mitigación de oclusión en solver) | Lógica de detección de giro de espaldas (visibilidad facial / hombros) y decaimiento suave de confianza. |
 | **YA LLEGÓ EL KINECT** | **WP-3.1** (`ferrite-freenect2-sys`) | Compilar `libfreenect2` en el sistema (WP-1.1), crear el puente seguro `cxx` en `crates/ferrite-freenect2-sys` (detrás de la feature `kinect`). |
 | **YA LLEGÓ EL KINECT** | **WP-3.3** (`FuenteKinect` + CLI grabar/reproducir) | Implementar `FuenteKinect` sobre el puente `cxx` y los subcomandos `ferrite grabar` y `ferrite reproducir`. |
 

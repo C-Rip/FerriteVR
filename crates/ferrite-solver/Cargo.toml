@@ -1,0 +1,19 @@
+[package]
+name = "ferrite-solver"
+description = "Solver cinematico 3D, desproyeccion, filtrado One Euro y rotaciones para FerriteVR"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+ferrite-nucleo = { path = "../ferrite-nucleo" }
+ferrite-pose = { path = "../ferrite-pose" }
+ferrite-sensor = { path = "../ferrite-sensor" }
+glam = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }

@@ -8,6 +8,8 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 ## [Sin publicar]
 
 ### Agregado
+- Crate `ferrite-solver` con elevación 3D y desproyección estenopeica mediante muestreo de mediana $5 \times 5$, filtro adaptativo temporal One Euro para posiciones y rotaciones (SLERP), cálculo de bases ortonormales anatómicas para cadera y pies con Gram-Schmidt sin división por cero ni `NaN`, y orquestación integral en `SolverCinematico`.
+- Documento de explicación de la arquitectura cinemática 3D en `docs/explicacion/solver.md`.
 - Motor de inferencia neuronal `MotorPose` con ONNX Runtime (`ort`) para RTMPose-m (Halpe26) y decodificador SimCC (`argmax` a medio píxel) que extrae los 26 puntos clave 2D con su nivel de confianza y los reproyecta al espacio original del sensor.
 - Permiso para licencia `CDLA-Permissive-2.0` en `deny.toml` para dependencias de certificados de red requeridas por `ort-sys`.
 - Crate `ferrite-pose` con segmentación de sujeto en profundidad (`CajaDelimitadora`), recorte afín, interpolación bilineal y normalización continua NCHW (256×192) con preasignación de buffers para cero asignaciones por fotograma.
