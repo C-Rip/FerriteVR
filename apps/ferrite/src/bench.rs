@@ -3,7 +3,7 @@
 use std::path::PathBuf;
 use std::time::Instant;
 
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result, bail};
 use ferrite_nucleo::IntrinsecosProfundidad;
 use ferrite_pose::{BackendInferencia, MotorPose};
 use ferrite_sensor::GeneradorSinteticoSensor;

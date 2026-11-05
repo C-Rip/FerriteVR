@@ -3,7 +3,7 @@
 use std::f32::consts::PI;
 
 use ferrite_nucleo::{
-    euler_zxy_grados_a_cuaternion, Articulacion, Esqueleto3D, PosUnity, PoseArticulacion,
+    Articulacion, Esqueleto3D, PosUnity, PoseArticulacion, euler_zxy_grados_a_cuaternion,
 };
 use glam::{Quat, Vec3};
 

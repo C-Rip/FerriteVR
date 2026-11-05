@@ -43,8 +43,8 @@ pub enum ErrorSolver {
 mod tests {
     use super::*;
     use ferrite_nucleo::{Articulacion, IntrinsecosProfundidad};
-    use ferrite_pose::simcc::{NUM_ARTICULACIONES_HALPE, Pose2D, PuntoClave2D};
     use ferrite_pose::CajaDelimitadora;
+    use ferrite_pose::simcc::{NUM_ARTICULACIONES_HALPE, Pose2D, PuntoClave2D};
     use ferrite_sensor::GeneradorSinteticoSensor;
     use glam::{Quat, Vec3};
 
@@ -166,8 +166,16 @@ mod tests {
 
         // Comprobar que todas las articulaciones generadas tienen valores finitos
         for (art, pose) in &esqueleto_3d.articulaciones {
-            assert!(pose.posicion.0.is_finite(), "Posición no finita en {:?}", art);
-            assert!(pose.rotacion.is_normalized(), "Rotación no normalizada en {:?}", art);
+            assert!(
+                pose.posicion.0.is_finite(),
+                "Posición no finita en {:?}",
+                art
+            );
+            assert!(
+                pose.rotacion.is_normalized(),
+                "Rotación no normalizada en {:?}",
+                art
+            );
             assert!(!pose.rotacion.is_nan(), "Rotación NaN en {:?}", art);
             assert!(pose.confianza >= 0.0 && pose.confianza <= 1.0);
         }

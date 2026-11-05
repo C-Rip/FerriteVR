@@ -1,8 +1,8 @@
 //! Preprocesamiento de imágenes, recorte afin y normalización NCHW para RTMPose.
 
-use ferrite_sensor::FrameSensor;
-use crate::bbox::{estimar_bbox_profundidad, CajaDelimitadora};
 use crate::ErrorPose;
+use crate::bbox::{CajaDelimitadora, estimar_bbox_profundidad};
+use ferrite_sensor::FrameSensor;
 
 /// Ancho de entrada estándar esperado por RTMPose-m en píxeles.
 pub const ANCHO_MODELO: u32 = 192;
@@ -83,17 +83,12 @@ impl PreprocesadorPose {
         }
 
         let bbox = bbox_opt.unwrap_or_else(|| {
-            CajaDelimitadora::nueva(
-                0.0,
-                0.0,
-                (frame.ancho - 1) as f32,
-                (frame.alto - 1) as f32,
-            )
-            .ajustar_proporcion(
-                (ANCHO_MODELO as f32) / (ALTO_MODELO as f32),
-                (frame.ancho - 1) as f32,
-                (frame.alto - 1) as f32,
-            )
+            CajaDelimitadora::nueva(0.0, 0.0, (frame.ancho - 1) as f32, (frame.alto - 1) as f32)
+                .ajustar_proporcion(
+                    (ANCHO_MODELO as f32) / (ALTO_MODELO as f32),
+                    (frame.ancho - 1) as f32,
+                    (frame.alto - 1) as f32,
+                )
         });
 
         let ancho_src = frame.ancho as f32;

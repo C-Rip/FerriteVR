@@ -4,10 +4,10 @@ use std::fs::File;
 use std::io::BufReader;
 use std::net::SocketAddr;
 use std::path::PathBuf;
-use std::sync::atomic::AtomicBool;
 use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
 
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result, bail};
 use ferrite_nucleo::IntrinsecosProfundidad;
 use ferrite_osc::EmisorVrchat;
 use ferrite_pose::{BackendInferencia, MotorPose};
@@ -15,7 +15,7 @@ use ferrite_sensor::{FuenteFrames, FuenteReproduccion, GeneradorSinteticoSensor}
 use ferrite_solver::SolverCinematico;
 use tracing::info;
 
-use crate::pipeline::{ejecutar_pipeline, OpcionesPipeline};
+use crate::pipeline::{OpcionesPipeline, ejecutar_pipeline};
 
 /// Opciones de configuración para la reproducción del pipeline.
 #[derive(Debug, Clone)]
@@ -57,48 +57,50 @@ pub fn ejecutar_reproducir(opciones: OpcionesReproducir, cancelar: Arc<AtomicBoo
         .parse::<BackendInferencia>()
         .map_err(|e| anyhow::anyhow!(e))?;
 
-    let (fuente, intrinsecos): (Box<dyn FuenteFrames>, IntrinsecosProfundidad) =
-        match (&opciones.archivo, opciones.sintetico) {
-            (Some(ruta), _) => {
-                let archivo = File::open(ruta).with_context(|| {
-                    format!(
-                        "No se pudo abrir el archivo de grabacion: {}",
-                        ruta.display()
-                    )
-                })?;
-                let lector = BufReader::new(archivo);
-                let reproductor = FuenteReproduccion::abrir(lector)
-                    .context("Error al procesar el encabezado del archivo .ferrite")?
-                    .con_repeticion(opciones.bucle);
+    let (fuente, intrinsecos): (Box<dyn FuenteFrames>, IntrinsecosProfundidad) = match (
+        &opciones.archivo,
+        opciones.sintetico,
+    ) {
+        (Some(ruta), _) => {
+            let archivo = File::open(ruta).with_context(|| {
+                format!(
+                    "No se pudo abrir el archivo de grabacion: {}",
+                    ruta.display()
+                )
+            })?;
+            let lector = BufReader::new(archivo);
+            let reproductor = FuenteReproduccion::abrir(lector)
+                .context("Error al procesar el encabezado del archivo .ferrite")?
+                .con_repeticion(opciones.bucle);
 
-                let intr = reproductor.intrinsecos();
-                info!(
-                    archivo = %ruta.display(),
-                    bucle = opciones.bucle,
-                    ancho = intr.ancho,
-                    alto = intr.alto,
-                    "Reproduciendo archivo de sesion .ferrite"
-                );
-                (Box::new(reproductor), intr)
-            }
-            (None, true) => {
-                let intr = IntrinsecosProfundidad::default();
-                let generador = GeneradorSinteticoSensor::nuevo(intr, opciones.hz as f32);
-                info!(
-                    hz = opciones.hz,
-                    "Reproduciendo fotogramas desde generador sintetico humanoide"
-                );
-                (Box::new(generador), intr)
-            }
-            (None, false) => {
-                bail!(
-                    "Debes especificar la ruta de un archivo '.ferrite' para reproducir o usar la bandera '--sintetico'.\n\
+            let intr = reproductor.intrinsecos();
+            info!(
+                archivo = %ruta.display(),
+                bucle = opciones.bucle,
+                ancho = intr.ancho,
+                alto = intr.alto,
+                "Reproduciendo archivo de sesion .ferrite"
+            );
+            (Box::new(reproductor), intr)
+        }
+        (None, true) => {
+            let intr = IntrinsecosProfundidad::default();
+            let generador = GeneradorSinteticoSensor::nuevo(intr, opciones.hz as f32);
+            info!(
+                hz = opciones.hz,
+                "Reproduciendo fotogramas desde generador sintetico humanoide"
+            );
+            (Box::new(generador), intr)
+        }
+        (None, false) => {
+            bail!(
+                "Debes especificar la ruta de un archivo '.ferrite' para reproducir o usar la bandera '--sintetico'.\n\
                      Ejemplo:\n\
                      cargo run -p ferrite -- reproducir sesion.ferrite\n\
                      cargo run -p ferrite -- reproducir --sintetico"
-                );
-            }
-        };
+            );
+        }
+    };
 
     info!(
         modelo = %opciones.ruta_modelo.display(),

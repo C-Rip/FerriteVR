@@ -1,13 +1,13 @@
 //! Motor de inferencia ONNX para estimación de pose 2D con RTMPose-m.
 
-use std::path::Path;
+use crate::ErrorPose;
+use crate::bbox::CajaDelimitadora;
+use crate::preprocesado::{ALTO_MODELO, ANCHO_MODELO, ELEMENTOS_NCHW, PreprocesadorPose};
+use crate::simcc::{Pose2D, decodificar_simcc};
 use ferrite_sensor::FrameSensor;
 use ort::session::Session;
 use ort::value::Tensor;
-use crate::bbox::CajaDelimitadora;
-use crate::preprocesado::{PreprocesadorPose, ALTO_MODELO, ANCHO_MODELO, ELEMENTOS_NCHW};
-use crate::simcc::{decodificar_simcc, Pose2D};
-use crate::ErrorPose;
+use std::path::Path;
 
 /// Backend de cómputo para la inferencia de redes neuronales con ONNX Runtime.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -87,17 +87,12 @@ impl MotorPose {
     /// Ejecuta la inferencia sobre el fotograma suministrado y retorna los 26 puntos clave 2D.
     pub fn estimar(&mut self, frame: &FrameSensor) -> Result<Pose2D, ErrorPose> {
         let bbox = self.preprocesador.estimar_bbox(frame).unwrap_or_else(|| {
-            CajaDelimitadora::nueva(
-                0.0,
-                0.0,
-                (frame.ancho - 1) as f32,
-                (frame.alto - 1) as f32,
-            )
-            .ajustar_proporcion(
-                (ANCHO_MODELO as f32) / (ALTO_MODELO as f32),
-                (frame.ancho - 1) as f32,
-                (frame.alto - 1) as f32,
-            )
+            CajaDelimitadora::nueva(0.0, 0.0, (frame.ancho - 1) as f32, (frame.alto - 1) as f32)
+                .ajustar_proporcion(
+                    (ANCHO_MODELO as f32) / (ALTO_MODELO as f32),
+                    (frame.ancho - 1) as f32,
+                    (frame.alto - 1) as f32,
+                )
         });
 
         // Preprocesar imagen en tensor continuo NCHW
@@ -105,9 +100,8 @@ impl MotorPose {
         self.buffer_entrada.copy_from_slice(tensor_slice);
 
         let forma_entrada = [1usize, 3, ALTO_MODELO as usize, ANCHO_MODELO as usize];
-        let tensor_entrada =
-            Tensor::from_array((forma_entrada, self.buffer_entrada.clone()))
-                .map_err(|e| ErrorPose::Inferencia(format!("Error al crear tensor de entrada: {e}")))?;
+        let tensor_entrada = Tensor::from_array((forma_entrada, self.buffer_entrada.clone()))
+            .map_err(|e| ErrorPose::Inferencia(format!("Error al crear tensor de entrada: {e}")))?;
 
         let salidas = self
             .session
@@ -118,9 +112,9 @@ impl MotorPose {
         let mut simcc_y_opt: Option<Vec<f32>> = None;
 
         for (nombre, valor) in salidas {
-            let (_, datos) = valor
-                .try_extract_tensor::<f32>()
-                .map_err(|e| ErrorPose::Inferencia(format!("Error al extraer salida '{nombre}': {e}")))?;
+            let (_, datos) = valor.try_extract_tensor::<f32>().map_err(|e| {
+                ErrorPose::Inferencia(format!("Error al extraer salida '{nombre}': {e}"))
+            })?;
 
             if nombre == "simcc_x" {
                 simcc_x_opt = Some(datos.to_vec());

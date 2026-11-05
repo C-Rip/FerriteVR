@@ -4,9 +4,9 @@
 //! de profundidad), este módulo mantiene la última pose válida estimada y aplica un decaimiento exponencial
 //! sobre su confianza. Si la oclusión persiste más de 400 ms, la articulación decae suavemente a cero.
 
-use std::collections::HashMap;
-use ferrite_nucleo::{Articulacion, Esqueleto3D, PoseArticulacion};
 use crate::elevacion::Punto3D;
+use ferrite_nucleo::{Articulacion, Esqueleto3D, PoseArticulacion};
+use std::collections::HashMap;
 
 /// Gestor de oclusiones con memoria temporal y decaimiento exponencial de confianza.
 pub struct GestorOclusion {
@@ -121,7 +121,10 @@ mod tests {
             PoseArticulacion::nueva(PosUnity(Vec3::new(0.0, 0.1, 0.0)), Quat::IDENTITY, 0.90),
         );
         gestor.aplicar(&mut esqueleto, 0);
-        assert_eq!(esqueleto.obtener(Articulacion::PieIzq).unwrap().confianza, 0.90);
+        assert_eq!(
+            esqueleto.obtener(Articulacion::PieIzq).unwrap().confianza,
+            0.90
+        );
 
         // Frame tras 100 ms: articulación desaparece del sensor
         let mut esqueleto_ocluido = Esqueleto3D::nuevo(100_000);

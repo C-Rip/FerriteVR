@@ -117,45 +117,149 @@ pub fn generar_pose_2d_sintetica(cx: f32, cy: f32, fase_marcha: f32) -> Pose2D {
     let sway_x = 10.0 * fase_marcha.sin();
 
     // 0: Nariz
-    puntos[0] = PuntoClave2D { u: cx + 0.5 * sway_x, v: cy - 117.0, confianza: 0.95 };
+    puntos[0] = PuntoClave2D {
+        u: cx + 0.5 * sway_x,
+        v: cy - 117.0,
+        confianza: 0.95,
+    };
     // 1, 2: Ojos
-    puntos[1] = PuntoClave2D { u: cx - 8.0 + 0.5 * sway_x, v: cy - 124.0, confianza: 0.95 };
-    puntos[2] = PuntoClave2D { u: cx + 8.0 + 0.5 * sway_x, v: cy - 124.0, confianza: 0.95 };
+    puntos[1] = PuntoClave2D {
+        u: cx - 8.0 + 0.5 * sway_x,
+        v: cy - 124.0,
+        confianza: 0.95,
+    };
+    puntos[2] = PuntoClave2D {
+        u: cx + 8.0 + 0.5 * sway_x,
+        v: cy - 124.0,
+        confianza: 0.95,
+    };
     // 3, 4: Orejas
-    puntos[3] = PuntoClave2D { u: cx - 22.0 + 0.5 * sway_x, v: cy - 122.0, confianza: 0.90 };
-    puntos[4] = PuntoClave2D { u: cx + 22.0 + 0.5 * sway_x, v: cy - 122.0, confianza: 0.90 };
+    puntos[3] = PuntoClave2D {
+        u: cx - 22.0 + 0.5 * sway_x,
+        v: cy - 122.0,
+        confianza: 0.90,
+    };
+    puntos[4] = PuntoClave2D {
+        u: cx + 22.0 + 0.5 * sway_x,
+        v: cy - 122.0,
+        confianza: 0.90,
+    };
     // 5, 6: Hombros
-    puntos[5] = PuntoClave2D { u: cx - 36.0 + 0.7 * sway_x, v: cy - 90.0, confianza: 0.95 };
-    puntos[6] = PuntoClave2D { u: cx + 36.0 + 0.7 * sway_x, v: cy - 90.0, confianza: 0.95 };
+    puntos[5] = PuntoClave2D {
+        u: cx - 36.0 + 0.7 * sway_x,
+        v: cy - 90.0,
+        confianza: 0.95,
+    };
+    puntos[6] = PuntoClave2D {
+        u: cx + 36.0 + 0.7 * sway_x,
+        v: cy - 90.0,
+        confianza: 0.95,
+    };
     // 7, 8: Codos
-    puntos[7] = PuntoClave2D { u: cx - 48.0, v: cy - 35.0 - 15.0 * elev_der, confianza: 0.90 };
-    puntos[8] = PuntoClave2D { u: cx + 48.0, v: cy - 35.0 - 15.0 * elev_izq, confianza: 0.90 };
+    puntos[7] = PuntoClave2D {
+        u: cx - 48.0,
+        v: cy - 35.0 - 15.0 * elev_der,
+        confianza: 0.90,
+    };
+    puntos[8] = PuntoClave2D {
+        u: cx + 48.0,
+        v: cy - 35.0 - 15.0 * elev_izq,
+        confianza: 0.90,
+    };
     // 9, 10: Muñecas
-    puntos[9] = PuntoClave2D { u: cx - 50.0, v: cy + 15.0 - 20.0 * elev_der, confianza: 0.85 };
-    puntos[10] = PuntoClave2D { u: cx + 50.0, v: cy + 15.0 - 20.0 * elev_izq, confianza: 0.85 };
+    puntos[9] = PuntoClave2D {
+        u: cx - 50.0,
+        v: cy + 15.0 - 20.0 * elev_der,
+        confianza: 0.85,
+    };
+    puntos[10] = PuntoClave2D {
+        u: cx + 50.0,
+        v: cy + 15.0 - 20.0 * elev_izq,
+        confianza: 0.85,
+    };
     // 11, 12: Caderas
-    puntos[11] = PuntoClave2D { u: cx - 20.0 + sway_x, v: cy + 25.0, confianza: 0.95 };
-    puntos[12] = PuntoClave2D { u: cx + 20.0 + sway_x, v: cy + 25.0, confianza: 0.95 };
+    puntos[11] = PuntoClave2D {
+        u: cx - 20.0 + sway_x,
+        v: cy + 25.0,
+        confianza: 0.95,
+    };
+    puntos[12] = PuntoClave2D {
+        u: cx + 20.0 + sway_x,
+        v: cy + 25.0,
+        confianza: 0.95,
+    };
     // 13, 14: Rodillas
-    puntos[13] = PuntoClave2D { u: cx - 20.0 + 0.5 * sway_x, v: cy + 95.0 - 18.0 * elev_izq, confianza: 0.95 };
-    puntos[14] = PuntoClave2D { u: cx + 20.0 + 0.5 * sway_x, v: cy + 95.0 - 18.0 * elev_der, confianza: 0.95 };
+    puntos[13] = PuntoClave2D {
+        u: cx - 20.0 + 0.5 * sway_x,
+        v: cy + 95.0 - 18.0 * elev_izq,
+        confianza: 0.95,
+    };
+    puntos[14] = PuntoClave2D {
+        u: cx + 20.0 + 0.5 * sway_x,
+        v: cy + 95.0 - 18.0 * elev_der,
+        confianza: 0.95,
+    };
     // 15, 16: Tobillos
-    puntos[15] = PuntoClave2D { u: cx - 20.0, v: cy + 165.0 - 30.0 * elev_izq, confianza: 0.95 };
-    puntos[16] = PuntoClave2D { u: cx + 20.0, v: cy + 165.0 - 30.0 * elev_der, confianza: 0.95 };
+    puntos[15] = PuntoClave2D {
+        u: cx - 20.0,
+        v: cy + 165.0 - 30.0 * elev_izq,
+        confianza: 0.95,
+    };
+    puntos[16] = PuntoClave2D {
+        u: cx + 20.0,
+        v: cy + 165.0 - 30.0 * elev_der,
+        confianza: 0.95,
+    };
     // 17: Cabeza
-    puntos[17] = PuntoClave2D { u: cx + 0.5 * sway_x, v: cy - 130.0, confianza: 0.95 };
+    puntos[17] = PuntoClave2D {
+        u: cx + 0.5 * sway_x,
+        v: cy - 130.0,
+        confianza: 0.95,
+    };
     // 18: Cuello
-    puntos[18] = PuntoClave2D { u: cx + 0.6 * sway_x, v: cy - 95.0, confianza: 0.95 };
+    puntos[18] = PuntoClave2D {
+        u: cx + 0.6 * sway_x,
+        v: cy - 95.0,
+        confianza: 0.95,
+    };
     // 19: Pelvis
-    puntos[19] = PuntoClave2D { u: cx + sway_x, v: cy + 25.0, confianza: 0.95 };
+    puntos[19] = PuntoClave2D {
+        u: cx + sway_x,
+        v: cy + 25.0,
+        confianza: 0.95,
+    };
     // 20, 21, 22: Pie izquierdo (dedo gordo, dedo pequeño, talón)
-    puntos[20] = PuntoClave2D { u: cx - 16.0, v: cy + 175.0 - 30.0 * elev_izq, confianza: 0.90 };
-    puntos[21] = PuntoClave2D { u: cx - 24.0, v: cy + 175.0 - 30.0 * elev_izq, confianza: 0.90 };
-    puntos[22] = PuntoClave2D { u: cx - 20.0, v: cy + 165.0 - 30.0 * elev_izq, confianza: 0.90 };
+    puntos[20] = PuntoClave2D {
+        u: cx - 16.0,
+        v: cy + 175.0 - 30.0 * elev_izq,
+        confianza: 0.90,
+    };
+    puntos[21] = PuntoClave2D {
+        u: cx - 24.0,
+        v: cy + 175.0 - 30.0 * elev_izq,
+        confianza: 0.90,
+    };
+    puntos[22] = PuntoClave2D {
+        u: cx - 20.0,
+        v: cy + 165.0 - 30.0 * elev_izq,
+        confianza: 0.90,
+    };
     // 23, 24, 25: Pie derecho (dedo gordo, dedo pequeño, talón)
-    puntos[23] = PuntoClave2D { u: cx + 16.0, v: cy + 175.0 - 30.0 * elev_der, confianza: 0.90 };
-    puntos[24] = PuntoClave2D { u: cx + 24.0, v: cy + 175.0 - 30.0 * elev_der, confianza: 0.90 };
-    puntos[25] = PuntoClave2D { u: cx + 20.0, v: cy + 165.0 - 30.0 * elev_der, confianza: 0.90 };
+    puntos[23] = PuntoClave2D {
+        u: cx + 16.0,
+        v: cy + 175.0 - 30.0 * elev_der,
+        confianza: 0.90,
+    };
+    puntos[24] = PuntoClave2D {
+        u: cx + 24.0,
+        v: cy + 175.0 - 30.0 * elev_der,
+        confianza: 0.90,
+    };
+    puntos[25] = PuntoClave2D {
+        u: cx + 20.0,
+        v: cy + 165.0 - 30.0 * elev_der,
+        confianza: 0.90,
+    };
 
     Pose2D {
         puntos,

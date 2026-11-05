@@ -105,7 +105,9 @@ mod tests {
         // Grabar en memoria
         let cursor = Cursor::new(Vec::new());
         let mut grabador = GrabadorFerrite::nuevo(cursor, intr, 30.0).expect("Crear grabador");
-        grabador.escribir_frame(&frame_original).expect("Escribir frame");
+        grabador
+            .escribir_frame(&frame_original)
+            .expect("Escribir frame");
         grabador.vaciar().expect("Vaciar");
         let bytes = grabador.desempaquetar().into_inner();
 
@@ -114,10 +116,16 @@ mod tests {
         assert_eq!(lector.intrinsecos().ancho, 4);
         assert_eq!(lector.intrinsecos().alto, 4);
 
-        let frame_leido = lector.leer_frame().expect("Leer frame").expect("Debe haber frame");
+        let frame_leido = lector
+            .leer_frame()
+            .expect("Leer frame")
+            .expect("Debe haber frame");
         assert_eq!(frame_leido.marca_tiempo_us, frame_original.marca_tiempo_us);
         assert_eq!(frame_leido.profundidad, frame_original.profundidad);
-        assert_eq!(frame_leido.color_registrado, frame_original.color_registrado);
+        assert_eq!(
+            frame_leido.color_registrado,
+            frame_original.color_registrado
+        );
 
         // Fin de archivo
         let eof = lector.leer_frame().expect("Lectura EOF");
@@ -131,10 +139,9 @@ mod tests {
             .crear_grabacion_en_memoria(3)
             .expect("Crear grabacion sintetica");
 
-        let mut reproductor =
-            FuenteReproduccion::abrir(Cursor::new(bytes))
-                .expect("Abrir reproduccion")
-                .con_sin_tiempo(true);
+        let mut reproductor = FuenteReproduccion::abrir(Cursor::new(bytes))
+            .expect("Abrir reproduccion")
+            .con_sin_tiempo(true);
 
         for _ in 0..3 {
             let frame = reproductor
@@ -156,11 +163,10 @@ mod tests {
             .crear_grabacion_en_memoria(2)
             .expect("Crear grabacion sintetica");
 
-        let mut reproductor =
-            FuenteReproduccion::abrir(Cursor::new(bytes))
-                .expect("Abrir reproduccion")
-                .con_sin_tiempo(true)
-                .con_repeticion(true);
+        let mut reproductor = FuenteReproduccion::abrir(Cursor::new(bytes))
+            .expect("Abrir reproduccion")
+            .con_sin_tiempo(true)
+            .con_repeticion(true);
 
         // Debe leer los 2 frames originales, reiniciar en bucle y leer otros 2
         for _ in 0..4 {
