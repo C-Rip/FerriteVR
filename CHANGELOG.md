@@ -8,6 +8,8 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 ## [Sin publicar]
 
 ### Agregado
+- Motor de inferencia neuronal `MotorPose` con ONNX Runtime (`ort`) para RTMPose-m (Halpe26) y decodificador SimCC (`argmax` a medio píxel) que extrae los 26 puntos clave 2D con su nivel de confianza y los reproyecta al espacio original del sensor.
+- Permiso para licencia `CDLA-Permissive-2.0` en `deny.toml` para dependencias de certificados de red requeridas por `ort-sys`.
 - Crate `ferrite-pose` con segmentación de sujeto en profundidad (`CajaDelimitadora`), recorte afín, interpolación bilineal y normalización continua NCHW (256×192) con preasignación de buffers para cero asignaciones por fotograma.
 - Script canónico `scripts/descargar-modelos.sh` para descarga idempotente y verificación de suma SHA-256 de RTMPose-m (Halpe26) en formato ONNX.
 - Especificación técnica del modelo de estimación de pose en `docs/referencia/modelos.md` detallando entradas normalizadas, representación SimCC de 26 articulaciones y su correspondencia con las ranuras de seguimiento de VRChat.

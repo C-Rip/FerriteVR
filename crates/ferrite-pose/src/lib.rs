@@ -3,17 +3,25 @@
 //! Este crate proporciona:
 //! - Detección de cajas delimitadoras (*bounding boxes*) de la persona mediante segmentación por profundidad en [`bbox`].
 //! - Preprocesamiento afin, escalado e interpolación bilineal normalizada a tensores NCHW (256×192) en [`preprocesado`].
-//! - Reproyección de coordenadas estimadas hacia el espacio original de captura.
+//! - Decodificación de salidas SimCC a coordenadas de píxel y confianza estadística en [`simcc`].
+//! - Motor de inferencia ONNX de alta velocidad multihilo en [`motor`].
 
 #![deny(non_ascii_idents)]
 #![deny(unsafe_code)]
 #![warn(missing_docs)]
 
 pub mod bbox;
+pub mod motor;
 pub mod preprocesado;
+pub mod simcc;
 
 pub use bbox::{estimar_bbox_profundidad, CajaDelimitadora};
+pub use motor::{BackendInferencia, MotorPose};
 pub use preprocesado::{PreprocesadorPose, ALTO_MODELO, ANCHO_MODELO, ELEMENTOS_NCHW};
+pub use simcc::{
+    decodificar_simcc, Pose2D, PuntoClave2D, BINS_SIMCC_X, BINS_SIMCC_Y,
+    NUM_ARTICULACIONES_HALPE, SIMCC_SPLIT_RATIO,
+};
 
 /// Errores producidos durante el preprocesamiento y la estimación de pose.
 #[derive(Debug, thiserror::Error)]
@@ -35,6 +43,7 @@ pub enum ErrorPose {
 mod tests {
     use super::*;
     use ferrite_sensor::GeneradorSinteticoSensor;
+    use std::path::Path;
 
     #[test]
     fn test_caja_delimitadora_geometria_y_margen() {
@@ -85,7 +94,6 @@ mod tests {
         assert_eq!(tensor.len(), ELEMENTOS_NCHW);
         for &val in tensor {
             assert!(val.is_finite());
-            // Valores normalizados típicamente caen entre -3.0 y 3.0
             assert!(val > -4.0 && val < 4.0);
         }
     }
@@ -95,7 +103,6 @@ mod tests {
         let preprocesador = PreprocesadorPose::default();
         let bbox = CajaDelimitadora::nueva(100.0, 50.0, 300.0, 400.0);
 
-        // El centro del tensor (96, 128) debe reproyectarse exactamente al centro de la bbox
         let (u_orig, v_orig) = preprocesador.reproyectar_a_frame(
             (ANCHO_MODELO as f32) * 0.5,
             (ALTO_MODELO as f32) * 0.5,
@@ -104,5 +111,56 @@ mod tests {
         let (u_esp, v_esp) = bbox.centro();
         assert!((u_orig - u_esp).abs() < 1e-4);
         assert!((v_orig - v_esp).abs() < 1e-4);
+    }
+
+    #[test]
+    fn test_decodificacion_simcc_valores_sinteticos() {
+        let mut simcc_x = vec![0.0f32; NUM_ARTICULACIONES_HALPE * BINS_SIMCC_X];
+        let mut simcc_y = vec![0.0f32; NUM_ARTICULACIONES_HALPE * BINS_SIMCC_Y];
+
+        // Articulación 0 con pico en bin X = 192 (medio de 384) e Y = 256 (medio de 512)
+        simcc_x[192] = 0.95;
+        simcc_y[256] = 0.90;
+
+        let bbox = CajaDelimitadora::nueva(0.0, 0.0, 192.0, 256.0);
+        let puntos = decodificar_simcc(&simcc_x, &simcc_y, &bbox);
+
+        // Bin 192 / 2.0 = 96.0; Bin 256 / 2.0 = 128.0
+        assert!((puntos[0].u - 96.0).abs() < 1e-4);
+        assert!((puntos[0].v - 128.0).abs() < 1e-4);
+        assert!((puntos[0].confianza - 0.90).abs() < 1e-4);
+    }
+
+    #[test]
+    fn test_motor_pose_inferencia_completa_con_modelo() {
+        let ruta_modelo = Path::new("../../modelos/rtmpose-m-halpe26.onnx");
+        if !ruta_modelo.exists() {
+            println!("Omitiendo test de motor: modelo ONNX no encontrado en la ruta esperada");
+            return;
+        }
+
+        let mut motor =
+            MotorPose::nuevo(ruta_modelo, BackendInferencia::Cpu).expect("Cargar modelo RTMPose");
+        assert_eq!(motor.backend(), BackendInferencia::Cpu);
+
+        let generador = GeneradorSinteticoSensor::default();
+        let frame = generador.generar_fotograma(0);
+
+        let pose = motor.estimar(&frame).expect("Inferencia exitosa");
+        assert_eq!(pose.puntos.len(), NUM_ARTICULACIONES_HALPE);
+
+        for punto in &pose.puntos {
+            assert!(punto.u.is_finite());
+            assert!(punto.v.is_finite());
+            assert!(punto.confianza >= 0.0 && punto.confianza <= 1.0);
+        }
+
+        // Cabeza (articulación 17) debe estar arriba de los tobillos (15 y 16)
+        let cabeza_v = pose.puntos[17].v;
+        let tobillo_izq_v = pose.puntos[15].v;
+        let tobillo_der_v = pose.puntos[16].v;
+
+        assert!(cabeza_v < tobillo_izq_v);
+        assert!(cabeza_v < tobillo_der_v);
     }
 }

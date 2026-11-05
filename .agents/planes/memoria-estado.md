@@ -77,13 +77,14 @@ A la fecha, se completaron con éxito las siguientes fases:
 - **Modelos y recursos (WP-4.1):**
   - Script canónico `scripts/descargar-modelos.sh` con descarga automatizada del paquete oficial de OpenMMLab, extracción de `end2end.onnx` y validación estricta de hash SHA-256 (`26f3a19e61304a600dfb82d1001d41d24343b89fc70a33ffc84657e0b0bf2ecf`). Idempotente.
   - Especificación técnica completa en `docs/referencia/modelos.md` documentando entrada normalizada NCHW (256x192), representación SimCC (vectores 1D horizontales y verticales a medio píxel) y tabla de correspondencia de las 26 articulaciones hacia los trackers OSC de VRChat.
-- **Preprocesado y segmentación por profundidad (WP-4.2 - `ferrite-pose`):**
-  - Detección de `CajaDelimitadora` con segmentación de percentil de primer plano para aislar al usuario de paredes de fondo.
-  - Recorte afín, interpolación bilineal y normalización RGB con media y desviación de RTMPose hacia tensor NCHW ($1 \times 3 \times 256 \times 192$).
-  - Reproyección geométrica de coordenadas del modelo hacia el espacio del fotograma original.
-  - 6 pruebas (4 unitarias + 2 doc-tests).
+- **Inferencia y decodificación SimCC (WP-4.3 - `ferrite-pose`):**
+  - Motor neuronal `MotorPose` integrando `ort` 2.0 (ONNX Runtime en Rust) optimizado en CPU multihilo con `intra_threads = 4`.
+  - Módulo `simcc`: Decodificación SimCC mediante `argmax` en vectores 1D independientes (`simcc_x` 384 bins, `simcc_y` 512 bins) con división subpíxel (`split_ratio = 2.0`).
+  - Extracción de confianza estadística acotada y reproyección inmediata al marco de referencia 2D de la cámara ($512 \times 424$).
+  - Prueba de integración end-to-end con el modelo real ONNX y un fotograma generado por `GeneradorSinteticoSensor`, validando los 26 puntos clave de Halpe26.
+  - 8 pruebas en total (6 unitarias + 2 doc-tests).
 
-**Resultado de verificación:** `./scripts/verificar.sh` pasa al 100% (31 tests en verde, 11 doc-tests, 0 advertencias en rustdoc, licencias validadas con `cargo deny`, 0 fallos ortográficos).
+**Resultado de verificación:** `./scripts/verificar.sh` pasa al 100% (33 tests en verde, 11 doc-tests, 0 advertencias en rustdoc, licencias validadas con `cargo deny`, 0 fallos ortográficos).
 
 ---
 
@@ -105,8 +106,8 @@ El plan maestro detallado con todos los paquetes de trabajo está en `.agents/pl
 
 | Si el Kinect físico... | Paquete a ejecutar | Descripción resumida |
 |---|---|---|
-| **AÚN NO HA LLEGADO** (Desarrollo sin hardware) | **WP-4.3** (`ferrite-pose` inferencia) | Integrar `ort` para ejecutar el modelo ONNX sobre el tensor NCHW, decodificar vectores SimCC (`argmax`) a 26 puntos clave 2D y confianza. |
-| **AÚN NO HA LLEGADO** | **F5** (Solver cinemático 3D) | Avanzar con `crates/ferrite-solver`: elevación 3D (WP-5.1), filtro One Euro (WP-5.2), bases ortonormales para rotaciones (WP-5.3), y mitigación de oclusiones (WP-5.4). |
+| **AÚN NO HA LLEGADO** (Desarrollo sin hardware) | **F5** (`crates/ferrite-solver`) | Solver cinemático 3D: elevación 3D con filtrado de mediana (WP-5.1), filtro adaptativo One Euro (WP-5.2), bases ortonormales para rotaciones de cadera y pies (WP-5.3), y mitigación de oclusiones/giro de espaldas (WP-5.4). |
+| **AÚN NO HA LLEGADO** | **WP-4.4** (Benchmark de backends) | Medir latencia p50/p99 sobre grabaciones en CPU y backends acelerados. |
 | **YA LLEGÓ EL KINECT** | **WP-3.1** (`ferrite-freenect2-sys`) | Compilar `libfreenect2` en el sistema (WP-1.1), crear el puente seguro `cxx` en `crates/ferrite-freenect2-sys` (detrás de la feature `kinect`). |
 | **YA LLEGÓ EL KINECT** | **WP-3.3** (`FuenteKinect` + CLI grabar/reproducir) | Implementar `FuenteKinect` sobre el puente `cxx` y los subcomandos `ferrite grabar` y `ferrite reproducir`. |
 

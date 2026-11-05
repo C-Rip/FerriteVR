@@ -13,5 +13,6 @@ workspace = true
 [dependencies]
 ferrite-nucleo = { path = "../ferrite-nucleo" }
 ferrite-sensor = { path = "../ferrite-sensor" }
+ort = { version = "2.0.0-rc.10", features = ["ndarray"] }
 thiserror = { workspace = true }
 tracing = { workspace = true }
