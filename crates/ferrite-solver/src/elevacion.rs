@@ -122,7 +122,7 @@ impl Elevador3D {
         let mut esqueleto = EsqueletoElevado::default();
 
         for (k, punto_2d) in pose_2d.puntos.iter().enumerate() {
-            if punto_2d.confianza < 0.15 {
+            if punto_2d.confianza < 0.08 {
                 continue;
             }
 
@@ -176,40 +176,53 @@ impl Elevador3D {
                 }
             }
             Articulacion::Cadera => {
-                // Cadera central (19) o punto medio de caderas izquierda (11) y derecha (12)
+                // Cadera central (19) o caderas izquierda (11) y derecha (12)
                 let pelvis = h[19];
-                if pelvis.confianza > 0.25 {
+                let cad_izq = h[11];
+                let cad_der = h[12];
+                if pelvis.confianza > 0.08 {
                     pelvis
-                } else {
-                    let cad_izq = h[11];
-                    let cad_der = h[12];
-                    if cad_izq.confianza > 0.1 && cad_der.confianza > 0.1 {
-                        Punto3D {
-                            posicion: PosUnity((cad_izq.posicion.0 + cad_der.posicion.0) * 0.5),
-                            confianza: (cad_izq.confianza + cad_der.confianza) * 0.5,
-                        }
-                    } else {
-                        pelvis
+                } else if cad_izq.confianza > 0.08 && cad_der.confianza > 0.08 {
+                    Punto3D {
+                        posicion: PosUnity((cad_izq.posicion.0 + cad_der.posicion.0) * 0.5),
+                        confianza: (cad_izq.confianza + cad_der.confianza) * 0.5,
                     }
+                } else if cad_izq.confianza > 0.08 {
+                    cad_izq
+                } else if cad_der.confianza > 0.08 {
+                    cad_der
+                } else {
+                    pelvis
                 }
             }
             Articulacion::RodillaIzq => h[13],
             Articulacion::RodillaDer => h[14],
             Articulacion::PieIzq => {
-                // Tobillo (15) o talón (22)
+                // Tobillo (15), talón (22) o dedo gordo (20)
                 let tobillo = h[15];
                 let talon = h[22];
-                if talon.confianza > 0.25 {
+                let dedo = h[20];
+                if talon.confianza > 0.08 {
                     talon
+                } else if tobillo.confianza > 0.08 {
+                    tobillo
+                } else if dedo.confianza > 0.08 {
+                    dedo
                 } else {
                     tobillo
                 }
             }
             Articulacion::PieDer => {
+                // Tobillo (16), talón (25) o dedo gordo (21)
                 let tobillo = h[16];
                 let talon = h[25];
-                if talon.confianza > 0.25 {
+                let dedo = h[21];
+                if talon.confianza > 0.08 {
                     talon
+                } else if tobillo.confianza > 0.08 {
+                    tobillo
+                } else if dedo.confianza > 0.08 {
+                    dedo
                 } else {
                     tobillo
                 }

@@ -90,9 +90,14 @@ A la fecha, se completaron con éxito las siguientes fases:
   - Filtro adaptativo temporal `FiltroOneEuro` y `FiltroOneEuroVec3` ($f_{c,\min} = 1.0$ Hz, $\beta = 0.05$) con reducción de jitter en reposo $> 99\%$ y respuesta ultrarrápida ($< 1$ fotograma) ante movimientos bruscos.
   - Filtro adaptativo para rotaciones `FiltroRotacion` con interpolación esférica (SLERP) ponderada por velocidad angular.
   - Construcción de bases ortonormales anatómicas tipo Gram-Schmidt para cadera y pies sin división por cero ni `NaN`.
-  - Orquestador `SolverCinematico` integrando elevación, filtrado y rotación para alimentar `Esqueleto3D`.
-  - Documento de arquitectura en `docs/explicacion/solver.md`.
-  - 5 pruebas unitarias exhaustivas validando filtrado, estabilidad y coherencia cinemática.
+- **Mitigación de Oclusiones y Persistencia (WP-5.4):**
+  - `GestorOclusion` con memoria de articulaciones y decaimiento exponencial temporal ($\tau = 250$ ms) para evitar pérdida abrupta de trackers.
+  - Detección de orientación de espaldas (visibilidad facial vs. hombros) que preserva la coherencia anatómica en giros a 180°.
+- **Calibración Espacial y Alineación de Suelo (WP-5.5):**
+  - `CalibracionEspacio` compensando inclinación de cámara (*un-tilt* de pitch), elevando la coordenada Y respecto al piso físico ($H = 1.10$ m) y recentrando el eje Z en el origen de VRChat ($Z = 0$).
+  - Garantía de cota mínima de suelo para pies ($Y \ge 0.05$ m).
+  - Orquestador `SolverCinematico` integrando elevación, oclusiones, filtros y calibración para alimentar `Esqueleto3D`.
+  - 8 pruebas unitarias exhaustivas validando filtrado, calibración, oclusiones y coherencia cinemática.
 
 ### F6: Integración del Pipeline en CLI (`apps/ferrite`)
 - **Conexión completa de punta a punta (Sensor -> Pose 2D -> Solver 3D -> OSC VRChat):**
@@ -100,10 +105,10 @@ A la fecha, se completaron con éxito las siguientes fases:
   - Subcomando `reproducir`: reproduce archivos grabados `.ferrite` (con soporte para `--bucle`) o fotogramas sintéticos hacia VRChat (`127.0.0.1:9000`).
   - Subcomando `grabar`: graba sesiones de prueba comprimidas con `zstd` en formato `.ferrite` (60 cuadros en ~320 KB).
   - Subcomando `bench`: evalúa latencias p50/p90/p99 sobre el pipeline completo. **Resultado en CPU en modo release: 14.63 ms p50 y 65.7 FPS globales**, superando con holgura el objetivo de latencia de < 25 ms.
-  - Subcomando `run`: preparado para hardware y con opción `--sintetico` para ejecución directa.
+  - Subcomando `run`: preparado para hardware y con opción `--sintetico` para ejecución directa emitiendo los **9 trackers completos** de VRChat.
   - Manejo unificado y seguro de señal Ctrl+C (`ctrlc`) para parada limpia.
 
-**Resultado de verificación:** `./scripts/verificar.sh` pasa al 100% (36 tests unitarios, 11 doc-tests = 47 pruebas en verde, 0 advertencias en rustdoc, licencias validadas con `cargo deny`, 0 fallos ortográficos).
+**Resultado de verificación:** `./scripts/verificar.sh` pasa al 100% (39 tests unitarios, 11 doc-tests = 50 pruebas en verde, 0 advertencias en rustdoc, licencias validadas con `cargo deny`, 0 fallos ortográficos).
 
 ---
 
@@ -125,8 +130,8 @@ El plan maestro detallado con todos los paquetes de trabajo está en `.agents/pl
 
 | Si el Kinect físico... | Paquete a ejecutar | Descripción resumida |
 |---|---|---|
-| **AÚN NO HA LLEGADO** (Desarrollo sin hardware) | **WP-5.4** (Mitigación de oclusión en solver) | Lógica de detección de giro de espaldas (visibilidad facial / hombros) y decaimiento suave de confianza. |
-| **AÚN NO HA LLEGADO** | **WP-5.5** (Calibración automática) | Calibración de altura e inclinación del sensor y proporciones corporales en pose en T. |
+| **AÚN NO HA LLEGADO** (Desarrollo sin hardware) | **WP-6.2** (Configuración persistente TOML) | Archivo de configuración en `~/.config/ferritevr/ferrite.toml` con opciones de calibración, destino OSC y filtros. |
+| **AÚN NO HA LLEGADO** | **WP-6.3** (Visualizador opcional rerun) | Feature `viz` para inspeccionar nube de puntos y esqueleto 3D en tiempo real. |
 | **YA LLEGÓ EL KINECT** | **WP-3.1** (`ferrite-freenect2-sys`) | Compilar `libfreenect2` en el sistema (WP-1.1), crear el puente seguro `cxx` en `crates/ferrite-freenect2-sys` (detrás de la feature `kinect`). |
 | **YA LLEGÓ EL KINECT** | **WP-3.3** (`FuenteKinect` en vivo) | Conectar `FuenteKinect` sobre el puente `cxx` a `ferrite run` y `ferrite grabar`. |
 

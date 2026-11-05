@@ -8,6 +8,9 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 ## [Sin publicar]
 
 ### Agregado
+- Calibración y alineación espacial (`CalibracionEspacio`) en `ferrite-solver` con elevación respecto al piso, recentrado en Z y corrección de inclinación (*pitch*) hacia el espacio de juego de VRChat.
+- Mitigación de oclusiones (`GestorOclusion`) con retención de últimas poses válidas, decaimiento exponencial suave y detección de orientación de espaldas.
+- Silueta humanoide con brazos, pies y rostro en `GeneradorSinteticoSensor` para reconocimiento robusto en RTMPose emitiendo los 9 trackers de VRChat.
 - Conexión del pipeline de seguimiento corporal en tiempo real en la CLI (`apps/ferrite`) unificando `ferrite-sensor` -> `ferrite-pose` -> `ferrite-solver` -> `ferrite-osc`.
 - Subcomando `reproducir` en CLI para emitir seguimiento de cuerpo completo desde archivos de sesión `.ferrite` o fotogramas sintéticos hacia VRChat OSC a 30 FPS.
 - Subcomando `grabar` en CLI para registrar sesiones de prueba comprimidas con `zstd` en formato `.ferrite`.

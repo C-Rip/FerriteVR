@@ -1,20 +1,28 @@
 //! Pipeline integral del solver cinemático 3D.
 
 use std::collections::HashMap;
-use ferrite_nucleo::{Articulacion, Esqueleto3D, IntrinsecosProfundidad, PosUnity, PoseArticulacion};
+use ferrite_nucleo::{
+    Articulacion, Esqueleto3D, IntrinsecosProfundidad, PosUnity, PoseArticulacion,
+};
 use ferrite_pose::simcc::Pose2D;
 use ferrite_sensor::FrameSensor;
 use glam::Quat;
 
+use crate::calibracion::CalibracionEspacio;
 use crate::elevacion::Elevador3D;
 use crate::filtro::{FiltroOneEuroVec3, FiltroRotacion};
-use crate::rotaciones::{calcular_rotacion_cadera, calcular_rotacion_pie_der, calcular_rotacion_pie_izq};
+use crate::oclusion::GestorOclusion;
+use crate::rotaciones::{
+    calcular_rotacion_cadera, calcular_rotacion_pie_der, calcular_rotacion_pie_izq,
+};
 use crate::ErrorSolver;
 
-/// Solver cinemático completo que transforma estimaciones 2D y profundidad en un esqueleto 3D filtrado.
+/// Solver cinemático completo que transforma estimaciones 2D y profundidad en un esqueleto 3D filtrado y calibrado.
 pub struct SolverCinematico {
     intrinsecos: IntrinsecosProfundidad,
     elevador: Elevador3D,
+    calibracion: CalibracionEspacio,
+    gestor_oclusion: GestorOclusion,
     filtros_posicion: HashMap<Articulacion, FiltroOneEuroVec3>,
     filtros_rotacion: HashMap<Articulacion, FiltroRotacion>,
 }
@@ -45,6 +53,8 @@ impl SolverCinematico {
         Self {
             intrinsecos,
             elevador: Elevador3D::default(),
+            calibracion: CalibracionEspacio::default(),
+            gestor_oclusion: GestorOclusion::default(),
             filtros_posicion,
             filtros_rotacion,
         }
@@ -56,7 +66,25 @@ impl SolverCinematico {
         self
     }
 
-    /// Procesa una pose 2D junto con el mapa de profundidad para generar un [`Esqueleto3D`] suavizado.
+    /// Configura los parámetros de calibración espacial hacia VRChat.
+    pub fn con_calibracion(mut self, calibracion: CalibracionEspacio) -> Self {
+        self.calibracion = calibracion;
+        self
+    }
+
+    /// Retorna una referencia a los parámetros de calibración actuales.
+    #[inline]
+    pub fn calibracion(&self) -> &CalibracionEspacio {
+        &self.calibracion
+    }
+
+    /// Retorna una referencia mutable a los parámetros de calibración actuales.
+    #[inline]
+    pub fn calibracion_mut(&mut self) -> &mut CalibracionEspacio {
+        &mut self.calibracion
+    }
+
+    /// Procesa una pose 2D junto con el mapa de profundidad para generar un [`Esqueleto3D`] suavizado y calibrado.
     pub fn resolver(
         &mut self,
         pose_2d: &Pose2D,
@@ -86,9 +114,14 @@ impl SolverCinematico {
         ];
 
         // 1. Calcular orientaciones anatómicas
-        let rot_cadera = calcular_rotacion_cadera(&esqueleto_elevado);
+        let mut rot_cadera = calcular_rotacion_cadera(&esqueleto_elevado);
         let rot_pie_izq = calcular_rotacion_pie_izq(&esqueleto_elevado);
         let rot_pie_der = calcular_rotacion_pie_der(&esqueleto_elevado);
+
+        // Si el sujeto está de espaldas, invertir yaw de cadera para mantener coherencia anatómica
+        if GestorOclusion::detectar_espaldas(&esqueleto_elevado.articulaciones_halpe) {
+            rot_cadera = rot_cadera * Quat::from_rotation_y(std::f32::consts::PI);
+        }
 
         for art in articulaciones {
             let punto_crudo = self.elevador.extraer_articulacion(&esqueleto_elevado, art);
@@ -122,15 +155,25 @@ impl SolverCinematico {
                 rot_cruda
             };
 
-            let pose_art =
-                PoseArticulacion::nueva(PosUnity(pos_filtrada), rot_filtrada, punto_crudo.confianza);
+            let pose_art = PoseArticulacion::nueva(
+                PosUnity(pos_filtrada),
+                rot_filtrada,
+                punto_crudo.confianza,
+            );
             esqueleto_final.insertar(art, pose_art);
         }
+
+        // 2. Aplicar retención con decaimiento suave sobre articulaciones ocluidas
+        self.gestor_oclusion
+            .aplicar(&mut esqueleto_final, marca_tiempo);
+
+        // 3. Transformar al espacio de juego de VRChat (elevación de suelo y recentrado)
+        self.calibracion.aplicar_a_esqueleto(&mut esqueleto_final);
 
         Ok(esqueleto_final)
     }
 
-    /// Reinicia los filtros temporales del solver (útil al iniciar una nueva sesión o detectar saltos bruscos).
+    /// Reinicia los filtros temporales y la memoria de oclusiones del solver.
     pub fn reiniciar(&mut self) {
         for f in self.filtros_posicion.values_mut() {
             f.reiniciar();
@@ -138,5 +181,6 @@ impl SolverCinematico {
         for f in self.filtros_rotacion.values_mut() {
             f.reiniciar();
         }
+        self.gestor_oclusion.reiniciar();
     }
 }

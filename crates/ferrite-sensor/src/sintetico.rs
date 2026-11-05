@@ -84,6 +84,20 @@ impl GeneradorSinteticoSensor {
         let pierna_der_u_min = (cx + 8.0) as u32;
         let pierna_der_u_max = (cx + 32.0) as u32;
 
+        // Brazos a los costados
+        let brazo_izq_u_min = (cx - 56.0) as u32;
+        let brazo_izq_u_max = (cx - 37.0) as u32;
+        let brazo_der_u_min = (cx + 37.0) as u32;
+        let brazo_der_u_max = (cx + 56.0) as u32;
+        let brazo_v_min = (cy - 90.0) as u32;
+        let brazo_v_max = (cy + 20.0) as u32;
+        let color_brazo = [40, 95, 160, 255];
+
+        // Pies / Zapatos
+        let pie_v_min = (cy + 171.0) as u32;
+        let pie_v_max = (cy + 188.0).min((alto - 1) as f32) as u32;
+        let color_zapatos = [20, 20, 25, 255];
+
         for v in 0..alto {
             for u in 0..ancho {
                 let idx = (v * ancho + u) as usize;
@@ -106,6 +120,17 @@ impl GeneradorSinteticoSensor {
                     continue;
                 }
 
+                // Brazos
+                if (u >= brazo_izq_u_min && u <= brazo_izq_u_max
+                    || u >= brazo_der_u_min && u <= brazo_der_u_max)
+                    && v >= brazo_v_min
+                    && v <= brazo_v_max
+                {
+                    frame.profundidad[idx] = 2050.0;
+                    frame.color_registrado[idx] = color_brazo;
+                    continue;
+                }
+
                 // Pierna izquierda
                 if u >= pierna_izq_u_min
                     && u <= pierna_izq_u_max
@@ -125,6 +150,17 @@ impl GeneradorSinteticoSensor {
                 {
                     frame.profundidad[idx] = pierna_der_prof;
                     frame.color_registrado[idx] = color_pantalones;
+                    continue;
+                }
+
+                // Pies
+                if (u >= pierna_izq_u_min && u <= pierna_izq_u_max + 4
+                    || u >= pierna_der_u_min - 4 && u <= pierna_der_u_max)
+                    && v >= pie_v_min
+                    && v <= pie_v_max
+                {
+                    frame.profundidad[idx] = 1950.0;
+                    frame.color_registrado[idx] = color_zapatos;
                 }
             }
         }

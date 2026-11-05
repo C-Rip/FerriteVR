@@ -10,13 +10,17 @@
 #![deny(unsafe_code)]
 #![warn(missing_docs)]
 
+pub mod calibracion;
 pub mod elevacion;
 pub mod filtro;
+pub mod oclusion;
 pub mod rotaciones;
 pub mod solver;
 
+pub use calibracion::CalibracionEspacio;
 pub use elevacion::{Elevador3D, EsqueletoElevado, Punto3D};
 pub use filtro::{FiltroOneEuro, FiltroOneEuroVec3, FiltroRotacion};
+pub use oclusion::GestorOclusion;
 pub use rotaciones::{
     calcular_rotacion_cadera, calcular_rotacion_pie_der, calcular_rotacion_pie_izq,
     construir_rotacion_de_ejes,
