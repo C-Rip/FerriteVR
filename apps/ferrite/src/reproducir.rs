@@ -120,6 +120,7 @@ pub fn ejecutar_reproducir(opciones: OpcionesReproducir, cancelar: Arc<AtomicBoo
     let pipeline_opts = OpcionesPipeline {
         hz: opciones.hz,
         duracion_seg: opciones.duracion_seg,
+        sintetico: opciones.sintetico,
     };
 
     ejecutar_pipeline(fuente, motor_pose, solver, emisor, pipeline_opts, cancelar)

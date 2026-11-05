@@ -19,7 +19,7 @@ pub use bbox::{estimar_bbox_profundidad, CajaDelimitadora};
 pub use motor::{BackendInferencia, MotorPose};
 pub use preprocesado::{PreprocesadorPose, ALTO_MODELO, ANCHO_MODELO, ELEMENTOS_NCHW};
 pub use simcc::{
-    decodificar_simcc, Pose2D, PuntoClave2D, BINS_SIMCC_X, BINS_SIMCC_Y,
+    decodificar_simcc, generar_pose_2d_sintetica, Pose2D, PuntoClave2D, BINS_SIMCC_X, BINS_SIMCC_Y,
     NUM_ARTICULACIONES_HALPE, SIMCC_SPLIT_RATIO,
 };
 

@@ -21,6 +21,8 @@ pub struct OpcionesPipeline {
     pub hz: u32,
     /// Duración máxima en segundos (opcional; si es `None` corre indefinidamente).
     pub duracion_seg: Option<u64>,
+    /// Indica si se ejecuta en modo de prueba sintética.
+    pub sintetico: bool,
 }
 
 /// Ejecuta el ciclo continuo de captura, estimación 2D, resolución 3D y emisión OSC.
@@ -80,9 +82,19 @@ pub fn ejecutar_pipeline(
 
         // 2. Inferencia de pose 2D con RTMPose Halpe26
         let t_ini_inferencia = Instant::now();
-        let pose_2d = motor_pose
-            .estimar(&frame)
-            .context("Error durante la inferencia de pose 2D")?;
+        let pose_2d = if opciones.sintetico {
+            let t_seg = (frame.marca_tiempo_us as f32) / 1_000_000.0;
+            let fase = 2.0 * std::f32::consts::PI * 1.0 * t_seg;
+            let cx = (frame.ancho as f32) * 0.5;
+            let cy = (frame.alto as f32) * 0.5;
+            // Ejecutar inferencia sobre el frame para medir latencia real del modelo
+            let _ = motor_pose.estimar(&frame);
+            ferrite_pose::simcc::generar_pose_2d_sintetica(cx, cy, fase)
+        } else {
+            motor_pose
+                .estimar(&frame)
+                .context("Error durante la inferencia de pose 2D")?
+        };
         let dur_inferencia = t_ini_inferencia.elapsed();
 
         // 3. Elevación 3D, filtrado One Euro y cálculo de rotaciones anatómicas
