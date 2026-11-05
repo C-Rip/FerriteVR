@@ -1,11 +1,11 @@
 //! Generación sintética de fotogramas de prueba sin hardware Kinect.
 
+use crate::formato::GrabadorFerrite;
+use crate::{ErrorSensor, FrameSensor, FuenteFrames};
+use ferrite_nucleo::IntrinsecosProfundidad;
 use std::f32::consts::PI;
 use std::io::Cursor;
 use std::time::Duration;
-use ferrite_nucleo::IntrinsecosProfundidad;
-use crate::formato::GrabadorFerrite;
-use crate::{ErrorSensor, FrameSensor, FuenteFrames};
 
 /// Generador determinista de fotogramas sintéticos de color y profundidad para pruebas.
 ///
@@ -105,7 +105,8 @@ impl GeneradorSinteticoSensor {
                 let v_f = v as f32;
 
                 // Cabeza
-                let dist_cabeza_cuad = (u_f - centro_cabeza_u).powi(2) + (v_f - centro_cabeza_v).powi(2);
+                let dist_cabeza_cuad =
+                    (u_f - centro_cabeza_u).powi(2) + (v_f - centro_cabeza_v).powi(2);
                 if dist_cabeza_cuad <= radio_cabeza_cuad {
                     let relieve = (1.0 - (dist_cabeza_cuad / radio_cabeza_cuad)).sqrt() * 50.0;
                     frame.profundidad[idx] = 2000.0 - relieve;

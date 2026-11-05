@@ -138,7 +138,11 @@ impl Esqueleto3D {
 
     /// Agrega o actualiza la pose de una articulación en el esqueleto.
     pub fn insertar(&mut self, articulacion: Articulacion, pose: PoseArticulacion) {
-        if let Some(pos) = self.articulaciones.iter().position(|(a, _)| *a == articulacion) {
+        if let Some(pos) = self
+            .articulaciones
+            .iter()
+            .position(|(a, _)| *a == articulacion)
+        {
             self.articulaciones[pos].1 = pose;
         } else {
             self.articulaciones.push((articulacion, pose));
@@ -255,11 +259,7 @@ impl IntrinsecosProfundidad {
 #[inline]
 fn normalizar_angulo_grados(grados: f32) -> f32 {
     let angulo = (grados + 180.0).rem_euclid(360.0) - 180.0;
-    if angulo == -180.0 {
-        180.0
-    } else {
-        angulo
-    }
+    if angulo == -180.0 { 180.0 } else { angulo }
 }
 
 /// Convierte un cuaternión de orientación en ángulos de Euler en grados sexagesimales `[x, y, z]`
@@ -338,11 +338,8 @@ mod tests {
     #[test]
     fn test_esqueleto_insercion_y_busqueda() {
         let mut esqueleto = Esqueleto3D::nuevo(123456);
-        let pose_cabeza = PoseArticulacion::nueva(
-            PosUnity(Vec3::new(0.0, 1.7, 0.0)),
-            Quat::IDENTITY,
-            0.95,
-        );
+        let pose_cabeza =
+            PoseArticulacion::nueva(PosUnity(Vec3::new(0.0, 1.7, 0.0)), Quat::IDENTITY, 0.95);
         esqueleto.insertar(Articulacion::Cabeza, pose_cabeza);
 
         assert_eq!(esqueleto.obtener(Articulacion::Cabeza), Some(&pose_cabeza));

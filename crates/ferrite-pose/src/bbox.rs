@@ -48,7 +48,10 @@ impl CajaDelimitadora {
     /// Retorna el centro geométrico `(u_centro, v_centro)` de la caja.
     #[inline]
     pub fn centro(&self) -> (f32, f32) {
-        ((self.u_min + self.u_max) * 0.5, (self.v_min + self.v_max) * 0.5)
+        (
+            (self.u_min + self.u_max) * 0.5,
+            (self.v_min + self.v_max) * 0.5,
+        )
     }
 
     /// Expande la caja aplicando una fracción de margen proporcional a su tamaño y la acota a los límites dados.

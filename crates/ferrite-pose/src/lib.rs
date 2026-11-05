@@ -15,12 +15,12 @@ pub mod motor;
 pub mod preprocesado;
 pub mod simcc;
 
-pub use bbox::{estimar_bbox_profundidad, CajaDelimitadora};
+pub use bbox::{CajaDelimitadora, estimar_bbox_profundidad};
 pub use motor::{BackendInferencia, MotorPose};
-pub use preprocesado::{PreprocesadorPose, ALTO_MODELO, ANCHO_MODELO, ELEMENTOS_NCHW};
+pub use preprocesado::{ALTO_MODELO, ANCHO_MODELO, ELEMENTOS_NCHW, PreprocesadorPose};
 pub use simcc::{
-    decodificar_simcc, generar_pose_2d_sintetica, Pose2D, PuntoClave2D, BINS_SIMCC_X, BINS_SIMCC_Y,
-    NUM_ARTICULACIONES_HALPE, SIMCC_SPLIT_RATIO,
+    BINS_SIMCC_X, BINS_SIMCC_Y, NUM_ARTICULACIONES_HALPE, Pose2D, PuntoClave2D, SIMCC_SPLIT_RATIO,
+    decodificar_simcc, generar_pose_2d_sintetica,
 };
 
 /// Errores producidos durante el preprocesamiento y la estimación de pose.

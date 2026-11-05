@@ -1,7 +1,7 @@
 //! Cálculo de rotaciones anatómicas y bases ortonormales para cuaterniones de Unity.
 
-use glam::{Mat3, Quat, Vec3};
 use crate::elevacion::EsqueletoElevado;
+use glam::{Mat3, Quat, Vec3};
 
 /// Construye una rotación [`Quat`] a partir de vectores de dirección aproximados para el eje lateral y el eje superior.
 ///

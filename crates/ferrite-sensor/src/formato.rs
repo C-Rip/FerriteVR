@@ -3,9 +3,9 @@
 //! Un archivo `.ferrite` se compone de un encabezado de 48 bytes seguido de
 //! una secuencia consecutiva de fotogramas comprimidos individualmente con `zstd`.
 
-use std::io::{Read, Seek, SeekFrom, Write};
-use ferrite_nucleo::IntrinsecosProfundidad;
 use crate::{ErrorSensor, FrameSensor};
+use ferrite_nucleo::IntrinsecosProfundidad;
+use std::io::{Read, Seek, SeekFrom, Write};
 
 /// Identificador mágico de cuatro bytes que encabeza todo archivo `.ferrite`.
 pub const MAGIC_FERRITE: &[u8; 4] = b"FERR";
@@ -207,8 +207,8 @@ impl<R: Read> LectorFerrite<R> {
         lector.read_exact(&mut bytes_encabezado)?;
 
         let encabezado = EncabezadoFerrite::desde_bytes(&bytes_encabezado)?;
-        let total_pixeles = (encabezado.intrinsecos.ancho as usize)
-            * (encabezado.intrinsecos.alto as usize);
+        let total_pixeles =
+            (encabezado.intrinsecos.ancho as usize) * (encabezado.intrinsecos.alto as usize);
         let bytes_descomprimidos = total_pixeles * 8;
 
         Ok(Self {
@@ -252,11 +252,8 @@ impl<R: Read> LectorFerrite<R> {
         self.lector.read_exact(&mut self.buffer_comprimido)?;
 
         self.buffer_descomprimido.clear();
-        zstd::stream::copy_decode(
-            &self.buffer_comprimido[..],
-            &mut self.buffer_descomprimido,
-        )
-        .map_err(|e| ErrorSensor::Descompresion(e.to_string()))?;
+        zstd::stream::copy_decode(&self.buffer_comprimido[..], &mut self.buffer_descomprimido)
+            .map_err(|e| ErrorSensor::Descompresion(e.to_string()))?;
 
         let ancho = self.encabezado.intrinsecos.ancho;
         let alto = self.encabezado.intrinsecos.alto;

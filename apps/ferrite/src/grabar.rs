@@ -3,11 +3,11 @@
 use std::fs::File;
 use std::io::BufWriter;
 use std::path::PathBuf;
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::{Duration, Instant};
 
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result, bail};
 use ferrite_nucleo::IntrinsecosProfundidad;
 use ferrite_sensor::{FuenteFrames, GeneradorSinteticoSensor, GrabadorFerrite};
 use tracing::info;
@@ -45,8 +45,12 @@ pub fn ejecutar_grabar(
     let intrinsecos = IntrinsecosProfundidad::default();
     let mut fuente = GeneradorSinteticoSensor::nuevo(intrinsecos, hz as f32);
 
-    let archivo = File::create(&salida)
-        .with_context(|| format!("No se pudo crear el archivo de grabacion: {}", salida.display()))?;
+    let archivo = File::create(&salida).with_context(|| {
+        format!(
+            "No se pudo crear el archivo de grabacion: {}",
+            salida.display()
+        )
+    })?;
     let escritor_buf = BufWriter::new(archivo);
     let mut grabador = GrabadorFerrite::nuevo(escritor_buf, intrinsecos, hz as f32)
         .context("Fallo al inicializar el grabador .ferrite")?;

@@ -15,18 +15,18 @@ mod sintetico;
 
 use std::net::SocketAddr;
 use std::path::PathBuf;
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::{Duration, Instant};
 
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result, bail};
 use clap::{Parser, Subcommand};
-use ferrite_osc::{muestras_desde_esqueleto, EmisorVrchat};
+use ferrite_osc::{EmisorVrchat, muestras_desde_esqueleto};
 use tracing::{info, warn};
 
-use bench::{ejecutar_bench, OpcionesBench};
+use bench::{OpcionesBench, ejecutar_bench};
 use grabar::ejecutar_grabar;
-use reproducir::{ejecutar_reproducir, OpcionesReproducir};
+use reproducir::{OpcionesReproducir, ejecutar_reproducir};
 
 /// Interfaz de línea de comandos de FerriteVR.
 #[derive(Debug, Parser)]
@@ -268,9 +268,7 @@ fn ejecutar_fake(
         bail!("La frecuencia de emision debe ser mayor a 0 Hz");
     }
 
-    info!(
-        "Iniciando emisor simulado (modo fake) hacia {destino} a {hz} Hz..."
-    );
+    info!("Iniciando emisor simulado (modo fake) hacia {destino} a {hz} Hz...");
 
     let emisor = EmisorVrchat::nuevo(destino)
         .with_context(|| format!("No se pudo inicializar el socket UDP hacia {destino}"))?;

@@ -1,10 +1,10 @@
 //! Reproducción de grabaciones en formato `.ferrite`.
 
-use std::io::{Read, Seek};
-use std::time::{Duration, Instant};
-use ferrite_nucleo::IntrinsecosProfundidad;
 use crate::formato::LectorFerrite;
 use crate::{ErrorSensor, FrameSensor, FuenteFrames};
+use ferrite_nucleo::IntrinsecosProfundidad;
+use std::io::{Read, Seek};
+use std::time::{Duration, Instant};
 
 /// Fuente de fotogramas que reproduce un archivo o flujo en formato `.ferrite`.
 pub struct FuenteReproduccion<R: Read> {
