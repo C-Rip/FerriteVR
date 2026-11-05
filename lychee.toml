@@ -1,6 +1,6 @@
 # lychee.toml - Configuración de comprobación de enlaces para FerriteVR
 
-# Dominios y patrones excluidos de comprobación
+# Dominios y expresiones excluidas de comprobacion
 exclude = [
     # Dominios de ejemplo en plantillas
     '^https?://example\.com',
