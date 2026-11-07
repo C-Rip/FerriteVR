@@ -1,9 +1,9 @@
 # Memoria de estado y traspaso para agentes de IA (FerriteVR)
 
 > **Destinatario:** Cualquier modelo de IA o agente asistente (Claude, Gemini, Grok, GLM, DeepSeek, etc.) y desarrollador humano que retome este proyecto en el futuro.
-> **Fecha de corte de esta sesión:** 2026-11-01
+> **Fecha de corte de esta sesión:** 2026-11-06
 > **Rama activa:** `dev` (¡NUNCA hacer commit directo a `main`!)
-> **Último commit de funcionalidad:** `12211a2 feat(cli): agrega modo fake con esqueleto sintetico`
+> **Último commit de funcionalidad:** `feat(sys): agrega puente cxx con libfreenect2`
 
 ---
 
@@ -62,7 +62,15 @@ A la fecha, se completaron con éxito las siguientes fases:
   - Manejo de Ctrl+C limpio (`ctrlc`) y emisión sin deriva de reloj.
   - 3 pruebas unitarias probando el generador sintético.
 
-### F3: Sensores y Grabación (Parte A sin hardware)
+### F3: Sensores y Grabación
+- **`crates/ferrite-freenect2-sys` (WP-3.1):**
+  - Crate con puente seguro `cxx` enlazando con `libfreenect2` bajo la feature `kinect`.
+  - Shim C++ (`shim.cc` / `shim.h`) con gestión de ciclo de vida (`DispositivoKinect`), inicialización segura de `Registration` tras `start()`, y soporte para múltiples modos de pipeline (CPU, OpenGL, OpenCL).
+  - Cero asignaciones en caliente en el bucle de captura reutilizando buffers estáticos de `Frame`.
+  - Conversión instantánea de formato BGRX a RGBA en memoria continua (512×424).
+  - Validación con hardware real mediante el ejemplo `capturar_uno`: detecta Kinect v2 con serial `014459564447`, firmware `4.0.3917.0`, intrínsecos `fx=367.06, fy=367.06, cx=257.49, cy=206.23` y captura en 615 ms 196,072 píxeles de profundidad válidos.
+  - Reglas de FFI formalizadas en `crates/ferrite-freenect2-sys/AGENTS.md`.
+  - 4 pruebas unitarias.
 - **`crates/ferrite-sensor` (WP-3.2):**
   - Trait `FuenteFrames` unificando hardware físico y archivos de sesión.
   - Estructura `FrameSensor` con preasignación y método `asegurar_dimensiones` para garantizar cero asignaciones en caliente.
@@ -121,19 +129,19 @@ El plan maestro detallado con todos los paquetes de trabajo está en `.agents/pl
    - VRChat en Nobara 44 recibió correctamente la telemetría OSC atómica en `127.0.0.1:9000`.
    - Se validó el reconocimiento de esferas y la calibración FBT completa con mandos de Quest 3S.
    - El avatar reflejó el movimiento de marcha armónica sintética.
-2. **WP-1.1 Instalación de dependencias del sistema (cuando llegue el sensor físico o se requiera compilar con soporte de hardware):**
-   ```bash
-   sudo dnf install rustfmt clippy cmake libusb1-devel turbojpeg-devel ocl-icd-devel mesa-libGL-devel glfw-devel clang-devel
-   ```
+2. ~~**WP-1.1 Instalación de dependencias del sistema y libfreenect2:**~~ **COMPLETADA CON ÉXITO (2026-11-06)**
+   - Paquetes instalados (`cmake`, `libusb1-devel`, `turbojpeg-devel`, `mesa-libGL-devel`, `glfw-devel`, `clang-devel`).
+   - `libfreenect2` compilado e instalado en `/usr/local/` con reglas udev activas.
+   - Kinect v2 físico detectado a 5 Gbps (SuperSpeed USB 3.0) y verificado con `Protonect` y `capturar_uno`.
 
 ### B. Próximos paquetes de desarrollo para el agente IA
 
-| Si el Kinect físico... | Paquete a ejecutar | Descripción resumida |
+| Estado del hardware | Paquete a ejecutar | Descripción resumida |
 |---|---|---|
-| **AÚN NO HA LLEGADO** (Desarrollo sin hardware) | **WP-6.2** (Configuración persistente TOML) | Archivo de configuración en `~/.config/ferritevr/ferrite.toml` con opciones de calibración, destino OSC y filtros. |
-| **AÚN NO HA LLEGADO** | **WP-6.3** (Visualizador opcional rerun) | Feature `viz` para inspeccionar nube de puntos y esqueleto 3D en tiempo real. |
-| **YA LLEGÓ EL KINECT** | **WP-3.1** (`ferrite-freenect2-sys`) | Compilar `libfreenect2` en el sistema (WP-1.1), crear el puente seguro `cxx` en `crates/ferrite-freenect2-sys` (detrás de la feature `kinect`). |
-| **YA LLEGÓ EL KINECT** | **WP-3.3** (`FuenteKinect` en vivo) | Conectar `FuenteKinect` sobre el puente `cxx` a `ferrite run` y `ferrite grabar`. |
+| **KINECT CONECTADO Y VERIFICADO** | **WP-3.3** (`FuenteKinect` en vivo) | Implementar `FuenteKinect` sobre `ferrite-freenect2-sys` (detrás de la feature `kinect` en `ferrite-sensor`), conectándola a `ferrite run` y `ferrite grabar` en la CLI. |
+| **KINECT CONECTADO Y VERIFICADO** | **WP-3.4** (Skill `kinect-depuracion-hw`) | Documentar lecciones aprendidas de diagnóstico de USB 3, reglas udev y ciclo de vida de libfreenect2 en `.agents/skills/kinect-depuracion-hw/`. |
+| Tras WP-3.3 | **WP-6.2** (Configuración persistente TOML) | Archivo de configuración en `~/.config/ferritevr/ferrite.toml` con opciones de calibración, destino OSC y filtros. |
+| Tras WP-6.2 | **WP-6.3** (Visualizador opcional rerun) | Feature `viz` para inspeccionar nube de puntos y esqueleto 3D en tiempo real. |
 
 ---
 

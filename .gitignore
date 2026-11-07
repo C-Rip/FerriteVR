@@ -8,6 +8,7 @@
 /modelos/*.onnx
 /modelos/*.engine
 /grabaciones/
+/captura_*.png
 
 # Configuración local de usuario
 /config/ferrite.toml

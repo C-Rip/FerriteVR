@@ -8,6 +8,8 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 ## [Sin publicar]
 
 ### Agregado
+- Crate `ferrite-freenect2-sys` (WP-3.1) con puente C++ seguro `cxx` enlazado con `libfreenect2` bajo la característica `kinect`, implementando ciclo de vida del sensor (`DispositivoKinect`), modos de pipeline (CPU, OpenGL, OpenCL), registro y alineación geométrica sincronizada de profundidad a color (512×424 RGBA) con cero asignaciones en caliente y ejemplo funcional `capturar_uno` probado exitosamente con hardware real.
+- Documento de directrices de interoperabilidad segura y FFI en `crates/ferrite-freenect2-sys/AGENTS.md`.
 - Calibración y alineación espacial (`CalibracionEspacio`) en `ferrite-solver` con elevación respecto al piso, recentrado en Z y corrección de inclinación (*pitch*) hacia el espacio de juego de VRChat.
 - Mitigación de oclusiones (`GestorOclusion`) con retención de últimas poses válidas, decaimiento exponencial suave y detección de orientación de espaldas.
 - Silueta humanoide con brazos, pies y rostro en `GeneradorSinteticoSensor` para reconocimiento robusto en RTMPose emitiendo los 9 trackers de VRChat.
